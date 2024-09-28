@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_PublishTargetUrl>F:\SalesForceAPI\get.qa</_PublishTargetUrl>
+    <History>True|2023-06-19T13:47:18.3844783Z;True|2023-06-15T10:25:50.0408816-05:00;True|2023-06-15T06:23:55.9849157-05:00;True|2023-06-14T22:48:54.0617553-05:00;True|2023-06-14T14:51:53.8098259-05:00;True|2023-06-14T14:48:04.7304408-05:00;True|2023-03-09T15:25:29.7005213-05:00;</History>
+  </PropertyGroup>
+</Project>

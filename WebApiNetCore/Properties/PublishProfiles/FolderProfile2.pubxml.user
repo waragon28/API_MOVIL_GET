@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_PublishTargetUrl>C:\inetpub\AppSalesForce\Rofalab\cl.get</_PublishTargetUrl>
+    <History>True|2023-02-02T23:42:40.0033475Z;</History>
+  </PropertyGroup>
+</Project>

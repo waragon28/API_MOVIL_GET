@@ -1,0 +1,8 @@
+{
+  "runtimeOptions": {
+    "additionalProbingPaths": [
+      "C:\\Users\\waragon\\.dotnet\\store\\|arch|\\|tfm|",
+      "C:\\Users\\waragon\\.nuget\\packages"
+    ]
+  }
+}

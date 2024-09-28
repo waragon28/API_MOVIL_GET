@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configurationSnapshot xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:schemas-microsoft-com:xml-wcfconfigurationsnapshot">
+  <behaviors />
+  <bindings>
+    <binding digest="System.ServiceModel.Configuration.BasicHttpBindingElement, System.ServiceModel, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089:&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;&lt;Data name=&quot;WebService - VISTSoap&quot; /&gt;" bindingType="basicHttpBinding" name="WebService - VISTSoap" />
+  </bindings>
+  <endpoints>
+    <endpoint normalizedDigest="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;&lt;Data address=&quot;http://169.47.196.209/WS_SINCOV_TEST/WebServiceOVSincronizacion.asmx&quot; binding=&quot;basicHttpBinding&quot; bindingConfiguration=&quot;WebService - VISTSoap&quot; contract=&quot;WSOv.WebServiceVISTSoap&quot; name=&quot;WebService - VISTSoap&quot; /&gt;" digest="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;&lt;Data address=&quot;http://169.47.196.209/WS_SINCOV_TEST/WebServiceOVSincronizacion.asmx&quot; binding=&quot;basicHttpBinding&quot; bindingConfiguration=&quot;WebService - VISTSoap&quot; contract=&quot;WSOv.WebServiceVISTSoap&quot; name=&quot;WebService - VISTSoap&quot; /&gt;" contractName="WSOv.WebServiceVISTSoap" name="WebService - VISTSoap" />
+  </endpoints>
+</configurationSnapshot>

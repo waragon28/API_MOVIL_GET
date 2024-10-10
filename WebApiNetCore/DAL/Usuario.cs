@@ -288,10 +288,10 @@ namespace SAP_Core.DAL
             try
             {
 #if VISTONY
-                 string url = Startup.Configuration.GetValue<string>("SLAuth"); //getS
-               // string url = "https://ecs-dbs-vistony:50000/b1s/v1/Login"; //get.qa
+                 string url = Startup.Configuration.GetValue<string>("SLAuth");//get
+
 #else
-                string url = "https://ecs-dbs-vistony:50000/b1s/v1/Login"; //get
+                string url = Startup.Configuration.GetValue<string>("ServiceLayer:PathUri")+"/b1s/v1/Login";//get
 #endif
                 Acceso acceso = new()
                 {

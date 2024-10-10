@@ -1878,11 +1878,11 @@
           "WebApiNetCore.dll": {}
         }
       },
-      "Sap.Data.Hana.Core.v2.1/2.10.15.0": {
+      "Sap.Data.Hana.Core.v2.1/2.5.86.0": {
         "runtime": {
           "Sap.Data.Hana.Core.v2.1.dll": {
-            "assemblyVersion": "2.10.15.0",
-            "fileVersion": "2.10.15.0"
+            "assemblyVersion": "2.5.86.0",
+            "fileVersion": "2.5.86.0"
           }
         }
       }
@@ -3110,7 +3110,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Sap.Data.Hana.Core.v2.1/2.10.15.0": {
+    "Sap.Data.Hana.Core.v2.1/2.5.86.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

@@ -46,7 +46,7 @@
           "Swashbuckle.AspNetCore": "6.5.0",
           "ZXing.Net": "0.16.9",
           "ZXing.Net.Mobile": "2.4.1",
-          "Sap.Data.Hana.Core.v2.1": "2.10.15.0",
+          "Sap.Data.Hana.Core.v2.1": "2.5.86.0",
           "Microsoft.AspNetCore.Antiforgery": "5.0.0.0",
           "Microsoft.AspNetCore.Authentication.Abstractions.Reference": "5.0.0.0",
           "Microsoft.AspNetCore.Authentication.Cookies": "5.0.0.0",
@@ -1614,11 +1614,11 @@
           "lib/netstandard1.0/zxing.portable.dll": {}
         }
       },
-      "Sap.Data.Hana.Core.v2.1/2.10.15.0": {
+      "Sap.Data.Hana.Core.v2.1/2.5.86.0": {
         "runtime": {
           "Sap.Data.Hana.Core.v2.1.dll": {
-            "assemblyVersion": "2.10.15.0",
-            "fileVersion": "2.10.15.0"
+            "assemblyVersion": "2.5.86.0",
+            "fileVersion": "2.5.86.0"
           }
         },
         "compile": {
@@ -4095,7 +4095,7 @@
       "path": "zxing.net.mobile/2.4.1",
       "hashPath": "zxing.net.mobile.2.4.1.nupkg.sha512"
     },
-    "Sap.Data.Hana.Core.v2.1/2.10.15.0": {
+    "Sap.Data.Hana.Core.v2.1/2.5.86.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

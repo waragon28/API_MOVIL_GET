@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace WebApiNetCore.BO
 {
-     public class DocumentLine
-    {
+     public class DocumentLineSD
+     {
         public int BaseType { get; set; }
         public int BaseEntry { get; set; }
         public int BaseLine { get; set; }
@@ -24,69 +24,11 @@ namespace WebApiNetCore.BO
         public string CostingCode3 { get; set; }
         public string COGSCostingCode2 { get; set; }
         public string COGSCostingCode3 { get; set; }
-        public string U_SYP_TIPOSERV { get; set; }
-        public string U_SYP_ARTINV { get; set; }
         public string U_SYP_HASPROV { get; set; }
-        public string U_SYP_CDRDOCEN { get; set; }
-        public string U_SYP_CDRLINUM { get; set; }
-        public string U_SYP_CLAVEBASE { get; set; }
         public string U_SYP_FECAT07 { get; set; }
-        public string U_SYP_FECAT08 { get; set; }
-        public string U_SYP_FECAT11 { get; set; }
-        public string U_SYP_FECAT14 { get; set; }
-        public string U_SYP_FECAT16 { get; set; }
-        public string U_SYP_FECAT17 { get; set; }
-        public string U_SYP_TPODISC { get; set; }
-        public string U_SYP_CGT_PROV { get; set; }
-        public string U_SYP_CTIPOSERVPUB { get; set; }
-        public string U_SYP_NTIPOSERVPUB { get; set; }
-        public string U_SYP_NROSUMIN { get; set; }
-        public string U_SYP_LECTANT { get; set; }
-        public string U_SYP_LECTACT { get; set; }
-        public string U_SYP_EXTERNO { get; set; }
-        public string U_SYP_EXT_LINEA { get; set; }
-        public double U_VIS_StockReq { get; set; }
-        public double U_VIS_UseAvg { get; set; }
-        public double U_VIS_StockRefAGV { get; set; }
-        public string U_VIS_CommentText { get; set; }
-        public string U_SYP_ARTEST { get; set; }
-        public double U_PZDeliveredQty { get; set; }
-        public double U_PZReturnedQty { get; set; }
         public string U_VIST_CTAINGDCTO { get; set; }
         public string U_VIS_PromID { get; set; }
         public string U_VIS_PromLineID { get; set; }
-        public string U_SYP_NUNFR { get; set; }
-        public string U_VIST_TIPO { get; set; }
-        public string U_SYP_FEDA { get; set; }
-        public int U_SYP_FEUICS { get; set; }
-        public int U_SYP_LINEAPDF { get; set; }
-        public double U_SYP_FETVI { get; set; }
-        public double U_SYP_FETVU { get; set; }
-        public double U_SYP_FETPU { get; set; }
-        public double U_SYP_FETIM { get; set; }
-        public double U_VIS_QtySRV { get; set; }
-        public double U_VIS_DiscountSRV { get; set; }
-        public string U_VIS_ItemCodeSRV { get; set; }
-        public double U_VIS_PriceSRV { get; set; }
-        public string U_SYP_FEDA2 { get; set; }
-        public string U_VIS_MOTDESCOST { get; set; }
-        public string U_VIS_MOTDESNEGO { get; set; }
-        public double U_VIS_PrcntMarginGain { get; set; }
-        public double U_QtySugerida { get; set; }
-        public string U_SSCC { get; set; }
-        public string U_CancelReasonOV { get; set; }
-        public double U_VIS_DsctoLista { get; set; }
-        public double U_VIS_PrecioLista { get; set; }
-        public string U_wms_picking { get; set; }
-        public double U_MarginGain { get; set; }
-        public double U_RateRef { get; set; }
-        public string U_SYP_FEGAFC { get; set; }
-        public double U_Presupuesto { get; set; }
-        public double U_Avance { get; set; }
-        public double U_Excedente { get; set; }
-        public string U_VIS_Stock { get; set; }
-        public string U_approver { get; set; }
-        public string U_Status_Aprob { get; set; }
     }
      public class SolicitudDevolucion
     {
@@ -420,7 +362,7 @@ namespace WebApiNetCore.BO
         public string U_CommentsAp1 { get; set; }
         public string U_CommentsAp2 { get; set; }
         public string U_CommentsAp3 { get; set; }
-        public List<DocumentLine> DocumentLines { get; set; }
+        public List<DocumentLineSD> DocumentLines { get; set; }
 
     }
 

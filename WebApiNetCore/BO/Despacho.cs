@@ -145,7 +145,7 @@ namespace SAP_Core.BO
         public string U_ReturnReason { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string U_ReturnReasonText { get; set; }
+        public string U_U_ReturnReasonText { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string U_Delivered { get; set; }

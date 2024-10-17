@@ -3,8 +3,36 @@
   "WorkspaceRootPath": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{858DB897-954C-4576-AE01-99588F89BCFE}|WebApiNetCore\\WebApiNetCore.csproj|e:\\desarrollo\\api\\app_movil\\api_mobil_get\\webapinetcore\\utils\\s3_imagen.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{858DB897-954C-4576-AE01-99588F89BCFE}|WebApiNetCore\\WebApiNetCore.csproj|solutionrelative:webapinetcore\\utils\\s3_imagen.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{858DB897-954C-4576-AE01-99588F89BCFE}|WebApiNetCore\\WebApiNetCore.csproj|e:\\desarrollo\\api\\app_movil\\api_mobil_get\\webapinetcore\\controllers\\depositscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{858DB897-954C-4576-AE01-99588F89BCFE}|WebApiNetCore\\WebApiNetCore.csproj|solutionrelative:webapinetcore\\controllers\\depositscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{858DB897-954C-4576-AE01-99588F89BCFE}|WebApiNetCore\\WebApiNetCore.csproj|e:\\desarrollo\\api\\app_movil\\api_mobil_get\\webapinetcore\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{858DB897-954C-4576-AE01-99588F89BCFE}|WebApiNetCore\\WebApiNetCore.csproj|solutionrelative:webapinetcore\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{858DB897-954C-4576-AE01-99588F89BCFE}|WebApiNetCore\\WebApiNetCore.csproj|e:\\desarrollo\\api\\app_movil\\api_mobil_get\\webapinetcore\\utils\\datasource.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{858DB897-954C-4576-AE01-99588F89BCFE}|WebApiNetCore\\WebApiNetCore.csproj|solutionrelative:webapinetcore\\utils\\datasource.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{858DB897-954C-4576-AE01-99588F89BCFE}|WebApiNetCore\\WebApiNetCore.csproj|e:\\desarrollo\\api\\app_movil\\api_mobil_get\\webapinetcore\\utils\\loginsap.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{858DB897-954C-4576-AE01-99588F89BCFE}|WebApiNetCore\\WebApiNetCore.csproj|solutionrelative:webapinetcore\\utils\\loginsap.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{858DB897-954C-4576-AE01-99588F89BCFE}|WebApiNetCore\\WebApiNetCore.csproj|e:\\desarrollo\\api\\app_movil\\api_mobil_get\\webapinetcore\\bo\\direccioncliente.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{858DB897-954C-4576-AE01-99588F89BCFE}|WebApiNetCore\\WebApiNetCore.csproj|solutionrelative:webapinetcore\\bo\\direccioncliente.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{858DB897-954C-4576-AE01-99588F89BCFE}|WebApiNetCore\\WebApiNetCore.csproj|e:\\desarrollo\\api\\app_movil\\api_mobil_get\\webapinetcore\\dal\\cliente.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{858DB897-954C-4576-AE01-99588F89BCFE}|WebApiNetCore\\WebApiNetCore.csproj|solutionrelative:webapinetcore\\dal\\cliente.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{858DB897-954C-4576-AE01-99588F89BCFE}|WebApiNetCore\\WebApiNetCore.csproj|e:\\desarrollo\\api\\app_movil\\api_mobil_get\\webapinetcore\\controllers\\approvalcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{858DB897-954C-4576-AE01-99588F89BCFE}|WebApiNetCore\\WebApiNetCore.csproj|solutionrelative:webapinetcore\\controllers\\approvalcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{858DB897-954C-4576-AE01-99588F89BCFE}|WebApiNetCore\\WebApiNetCore.csproj|e:\\desarrollo\\api\\app_movil\\api_mobil_get\\webapinetcore\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{858DB897-954C-4576-AE01-99588F89BCFE}|WebApiNetCore\\WebApiNetCore.csproj|solutionrelative:webapinetcore\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,7 +42,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 170,
-          "SelectedChildIndex": 7,
+          "SelectedChildIndex": 11,
           "Children": [
             {
               "$type": "Bookmark",
@@ -38,23 +66,110 @@
             },
             {
               "$type": "Bookmark",
-              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
-            },
-            {
-              "$type": "Bookmark",
               "Name": "ST:132:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "S3_Imagen.cs",
-              "DocumentMoniker": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\WebApiNetCore\\Utils\\S3_Imagen.cs",
-              "RelativeDocumentMoniker": "WebApiNetCore\\Utils\\S3_Imagen.cs",
-              "ToolTip": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\WebApiNetCore\\Utils\\S3_Imagen.cs",
-              "RelativeToolTip": "WebApiNetCore\\Utils\\S3_Imagen.cs",
-              "ViewState": "AQIAAOsAAABQMzMzM/MmwAgBAAAAAAAA",
+              "DocumentIndex": 1,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\WebApiNetCore\\appsettings.json",
+              "RelativeDocumentMoniker": "WebApiNetCore\\appsettings.json",
+              "ToolTip": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\WebApiNetCore\\appsettings.json",
+              "RelativeToolTip": "WebApiNetCore\\appsettings.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABgAAAAFAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-10-09T20:07:43.173Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "DireccionCliente.cs",
+              "DocumentMoniker": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\WebApiNetCore\\BO\\DireccionCliente.cs",
+              "RelativeDocumentMoniker": "WebApiNetCore\\BO\\DireccionCliente.cs",
+              "ToolTip": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\WebApiNetCore\\BO\\DireccionCliente.cs",
+              "RelativeToolTip": "WebApiNetCore\\BO\\DireccionCliente.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAJAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-02T21:41:14.575Z",
+              "WhenOpened": "2024-10-09T20:07:34.727Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "DataSource.cs",
+              "DocumentMoniker": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\WebApiNetCore\\Utils\\DataSource.cs",
+              "RelativeDocumentMoniker": "WebApiNetCore\\Utils\\DataSource.cs",
+              "ToolTip": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\WebApiNetCore\\Utils\\DataSource.cs",
+              "RelativeToolTip": "WebApiNetCore\\Utils\\DataSource.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAAJAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-09T20:07:21.045Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Cliente.cs",
+              "DocumentMoniker": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\WebApiNetCore\\DAL\\Cliente.cs",
+              "RelativeDocumentMoniker": "WebApiNetCore\\DAL\\Cliente.cs",
+              "ToolTip": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\WebApiNetCore\\DAL\\Cliente.cs",
+              "RelativeToolTip": "WebApiNetCore\\DAL\\Cliente.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAEAAAAJAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-09T20:03:41.956Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "LoginSAP.cs",
+              "DocumentMoniker": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\WebApiNetCore\\Utils\\LoginSAP.cs",
+              "RelativeDocumentMoniker": "WebApiNetCore\\Utils\\LoginSAP.cs",
+              "ToolTip": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\WebApiNetCore\\Utils\\LoginSAP.cs",
+              "RelativeToolTip": "WebApiNetCore\\Utils\\LoginSAP.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAJAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-09T20:03:42.039Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "DepositsController.cs",
+              "DocumentMoniker": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\WebApiNetCore\\Controllers\\DepositsController.cs",
+              "RelativeDocumentMoniker": "WebApiNetCore\\Controllers\\DepositsController.cs",
+              "ToolTip": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\WebApiNetCore\\Controllers\\DepositsController.cs",
+              "RelativeToolTip": "WebApiNetCore\\Controllers\\DepositsController.cs",
+              "ViewState": "AQIAAAwAAAAAAAAAAAAAABcAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-09T20:03:19.976Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "UsersController.cs",
+              "DocumentMoniker": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\WebApiNetCore\\Controllers\\UsersController.cs",
+              "RelativeDocumentMoniker": "WebApiNetCore\\Controllers\\UsersController.cs",
+              "ToolTip": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\WebApiNetCore\\Controllers\\UsersController.cs",
+              "RelativeToolTip": "WebApiNetCore\\Controllers\\UsersController.cs",
+              "ViewState": "AQIAAAsAAAAAAAAAAABRwC8AAAA4AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-07T20:35:22.659Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ApprovalController.cs",
+              "DocumentMoniker": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\WebApiNetCore\\Controllers\\ApprovalController.cs",
+              "RelativeDocumentMoniker": "WebApiNetCore\\Controllers\\ApprovalController.cs",
+              "ToolTip": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\WebApiNetCore\\Controllers\\ApprovalController.cs",
+              "RelativeToolTip": "WebApiNetCore\\Controllers\\ApprovalController.cs",
+              "ViewState": "AQIAAJoAAAAAMTMzMzMrwK8AAAAjAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-05T13:57:41.676Z",
               "EditorCaption": ""
             }
           ]

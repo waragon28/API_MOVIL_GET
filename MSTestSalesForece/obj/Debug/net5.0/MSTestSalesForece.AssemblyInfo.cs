@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MSTestSalesForece")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b5a390a0efb45378fb3bc284cdd24074cb69327e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+055b6bf793c6843f0ad894b543d2a17c54082e32")]
 [assembly: System.Reflection.AssemblyProductAttribute("MSTestSalesForece")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MSTestSalesForece")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,4 +1,4 @@
-﻿#define VISTONY
+﻿//#define VISTONY
 
 using System;
 using System.Collections.Generic;
@@ -288,7 +288,7 @@ namespace SAP_Core.DAL
             try
             {
 #if VISTONY
-                 string url = Startup.Configuration.GetValue<string>("SLAuth");//get
+                 string url = Startup.Configuration.GetValue<string>("SLAuth");
 
 #else
                 string url = Startup.Configuration.GetValue<string>("ServiceLayer:PathUri")+"/b1s/v1/Login";//get

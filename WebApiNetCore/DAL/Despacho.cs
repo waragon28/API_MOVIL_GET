@@ -30,6 +30,14 @@ using System.ComponentModel;
 using Newtonsoft.Json;
 using Azure;
 using GoogleApi.Entities.Interfaces;
+using System.Net.Http;
+using WebApiNetCore.DAL;
+using Microsoft.Graph.IdentityGovernance.PrivilegedAccess.Group.EligibilityScheduleRequests;
+using ZXing;
+using Microsoft.AspNetCore.Builder;
+using GoogleApi.Entities.Maps.Directions.Response;
+using Microsoft.IdentityModel.Abstractions;
+using System.Runtime.InteropServices;
 
 namespace SAP_Core.DAL
 {
@@ -40,6 +48,9 @@ namespace SAP_Core.DAL
         private static readonly string _awsSecretKey = Startup.Configuration.GetValue<string>("S3:AWSSecretKey");
         private static readonly string _endpoingURL = Startup.Configuration.GetValue<string>("S3:EndpoingURL");
         private static readonly string _bucketName = Startup.Configuration.GetValue<string>("S3:Bucketname");
+
+        CorreoAlert correoAlert = new CorreoAlert();
+        UsuarioDAL user = new UsuarioDAL();
 
         public DespachoDAL(IMemoryCache _memoryCache)
         {
@@ -131,7 +142,8 @@ namespace SAP_Core.DAL
             string value = "";
             HanaDataReader reader;
             HanaConnection connection = GetConnection();
-            string strSQL = string.Format("CALL {0}.APP_DESPACHO_LIST_CLIENT('{1}','{2}')", DataSource.bd(), fecha, imei);
+            //string strSQL = string.Format("CALL {0}.APP_DESPACHO_LIST_CLIENT_QA('{1}','{2}')",DataSource.bd(), fecha, imei); //QA
+            string strSQL = string.Format("CALL {0}.APP_DESPACHO_LIST_CLIENT('{1}','{2}')",DataSource.bd(), fecha, imei);
             try
             {
                 if (connection.State == ConnectionState.Open)
@@ -406,14 +418,14 @@ namespace SAP_Core.DAL
         }
 
 
-        public async Task<ResponseData> SolicitudDevolucion(string DocEntry,string returnReasonText)
+        public async Task<ResponseData> SolicitudDevolucion(string DocEntry,string returnReasonText,string Token)
             
         {
             ResponseData rs = new ResponseData();
+            HanaConnection connection = GetConnection();
             try
             {
                 HanaDataReader reader;
-                HanaConnection connection = GetConnection();
                 string strSQL = string.Format("CALL {0}.APP_SOLI_DEV_C ({1})", DataSource.bd(), DocEntry);
                 //   SoliDevBO ObjSoliDevBO = new SoliDevBO();
                 SolicitudDevolucion ObjSolicitudDevolucion = new SolicitudDevolucion();
@@ -439,7 +451,6 @@ namespace SAP_Core.DAL
                         ObjSolicitudDevolucion.PaymentGroupCode = Convert.ToInt32(reader["GroupNum"].ToString());
                         ObjSolicitudDevolucion.SalesPersonCode = Convert.ToInt32(reader["SlpCode"].ToString());
                         ObjSolicitudDevolucion.DocumentsOwner = Convert.ToInt32(reader["OwnerCode"].ToString());
-                        ObjSolicitudDevolucion.ContactPersonCode = Convert.ToInt32(reader["CntctCode"].ToString());
                         ObjSolicitudDevolucion.TaxDate = reader["TaxDate"].ToString();
                         ObjSolicitudDevolucion.DocObjectCode = "oReturnRequest";
                         ObjSolicitudDevolucion.ShipToCode = reader["ShipToCode"].ToString();
@@ -551,23 +562,15 @@ namespace SAP_Core.DAL
                         ObjSolicitudDevolucion.U_SYP_MDCO = reader["U_SYP_MDCD"].ToString();
                         ObjSolicitudDevolucion.U_SYP_MOTNC = returnReasonText;
                         ObjSolicitudDevolucion.DocumentLines = Detalle(DocEntry);
-
+                        ObjSolicitudDevolucion.U_SYP_TPONC = "06";
                     }
 
                     dynamic Json = JsonConvert.SerializeObject(ObjSolicitudDevolucion);
 
-                    ResponseData response = await serviceLayer.Request(string.Format("/b1s/v1/ReturnRequest"), Method.POST, Json);
+                    var response = await serviceLayer.Request(string.Format("/b1s/v1/ReturnRequest"), Method.POST, Json, Token);
 
-                    var responseBody = response.Data.Content.ReadAsStringAsync();
-
-                   /* if (response.StatusCode == HttpStatusCode.NoContent)
-                    {
-                        var responseBody = response.Data.Content.ReadAsStringAsync();
-                    }
-                    else
-                    {
-                        var responseBody = response.Content.ReadAsStringAsync();
-                    }*/
+                    string XD = ""; 
+                    var XX = response.Data.Content.ReadAsStringAsync();
                 }
 
                 
@@ -576,7 +579,10 @@ namespace SAP_Core.DAL
             catch (Exception ex)
             {
                 ex.Message.ToString();
+                correoAlert.EnviarCorreoOffice365("Prueba API Ventas " + "Generacion de SLD Vistony",
+                    ex.Message.ToString());
             }
+            connection.Close();
             return rs;
         }
 
@@ -623,6 +629,7 @@ namespace SAP_Core.DAL
                     documentLine.U_VIST_CTAINGDCTO = reader["U_VIST_CTAINGDCTO"].ToString();
                     documentLine.U_VIS_PromID = reader["U_VIS_PromID"].ToString();
                     documentLine.U_VIS_PromLineID = reader["U_VIS_PromLineID"].ToString();
+                    documentLine.TaxOnly = reader["TaxOnly"].ToString();
                     LsDocumentLinew.Add(documentLine);
                 }
             }
@@ -633,7 +640,14 @@ namespace SAP_Core.DAL
         public async Task<ResponseData> update(InDispatchList dispatchList)
         {
 
+            HanaConnection connection = GetConnection();
+            List<DispatchResponseDetalle> dispatchResponseListDetalle = new();
             List<DispatchResponse> dispatchResponseList = new();
+
+            DispatchResponseDetalle dispatchResponseDetalle = new();
+
+            try
+            {
 
             var s3ClientConfig = new AmazonS3Config
             {
@@ -645,8 +659,6 @@ namespace SAP_Core.DAL
             foreach (InDispatch dispatch in dispatchList.Dispatch)
             {
 
-                UsuarioDAL user = new UsuarioDAL();
-                LoginSL sl = user.loginServiceLayer().GetAwaiter().GetResult();
                 VIS_DIS_Drt1 listTemp = new();
 
                 listTemp.VIS_DIS_DRT1Collection = dispatch.Details.Select(d => new VIS_DIS_Drt1collection
@@ -671,7 +683,6 @@ namespace SAP_Core.DAL
                     U_DocEntry = d.DeliveryNotes
                 }).ToList();
 
-                List<DispatchResponseDetalle> dispatchResponseListDetalle = new();
                 DispatchResponse dispatchResponse = new();
                 dispatchResponse.DocEntry = dispatch.DocEntry;
                 
@@ -681,47 +692,123 @@ namespace SAP_Core.DAL
                     string deliveryNote = temp.U_DocEntry;
                     string returnReasonText = temp.U_U_ReturnReasonText;
 
+                    string jsonString = "{\"VIS_DIS_DRT1Collection\":[" + JsonConvert.SerializeObject(temp) + "]}";
 
-                    string jsonString = "{\"VIS_DIS_DRT1Collection\":["+ JsonConvert.SerializeObject(temp) + "]}";
-                    ResponseData response = await serviceLayer.Request( "/b1s/v1/VIS_DIS_ODRT(" + dispatch.DocEntry + ")", Method.PATCH, jsonString, sl.token);
-                    
-                    DispatchResponseDetalle dispatchResponseDetalle = new();
+                        // Deserializamos el JSON a un JObject
+                        JObject data = JObject.Parse(jsonString);
 
-                    if (response.StatusCode == HttpStatusCode.NoContent)
-                    {
+                        // Accedemos directamente a la propiedad 'U_PhotoStore' del primer objeto
+                        var photoStore = data["VIS_DIS_DRT1Collection"]?[0]?["U_PhotoStore"];  
+                        
+                        // Validamos si existe el nodo 'Details' dentro de 'Dispatch'
+                        var U_CheckInTime = data["VIS_DIS_DRT1Collection"]?[0]?["U_CheckInTime"];
+
+                        // Validamos si existe 'PhotoDocument'
+                        if (photoStore.ToString() !=String.Empty)
+                        {
+
+                            string U_PhotoDocument = data["VIS_DIS_DRT1Collection"]?[0]?["U_PhotoDocument"].ToString();
+                            string U_PhotoStore = data["VIS_DIS_DRT1Collection"]?[0]?["U_PhotoStore"].ToString();
+                            string LineId = data["VIS_DIS_DRT1Collection"]?[0]?["LineId"].ToString();
+                            string DocEntry = data["VIS_DIS_DRT1Collection"]?[0]?["DocEntry"].ToString();
+
+
+                            string strSQL = string.Format("UPDATE {0}.\"@VIS_DIS_DRT1\" SET \"U_PhotoDocument\" = '{1}'," +
+                                                          "\"U_PhotoStore\" = '{2}' " +
+                                        " WHERE \"DocEntry\" ='{3}' AND  \"LineId\" ='{4}'",
+                            DataSource.bd(), U_PhotoDocument, U_PhotoStore, DocEntry, LineId);
+                            connection.Open();
+                            HanaCommand command = new HanaCommand(strSQL, connection);
+                            HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+                            if (connection.State == ConnectionState.Open)
+                            {
+                                connection.Close();
+                            }
+
+                        }
+                        else if (U_CheckInTime.ToString() != String.Empty)
+                        {
+                            string U_CheckInTime2 = data["VIS_DIS_DRT1Collection"]?[0]?["U_CheckInTime"].ToString().Substring(0, 4);
+                            string U_CheckOutTime = data["VIS_DIS_DRT1Collection"]?[0]?["U_CheckOutTime"].ToString().Substring(0, 4);
+                            string DocEntry = data["VIS_DIS_DRT1Collection"]?[0]?["DocEntry"].ToString();
+                            string U_Latitude = data["VIS_DIS_DRT1Collection"]?[0]?["U_Latitude"].ToString();
+                            string U_Longitude = data["VIS_DIS_DRT1Collection"]?[0]?["U_Longitude"].ToString();
+                            string LineId = data["VIS_DIS_DRT1Collection"]?[0]?["LineId"].ToString();
+
+                            string strSQL = string.Format("UPDATE {0}.\"@VIS_DIS_DRT1\" SET \"U_CheckInTime\" = '{1}'," +
+                                                          "\"U_CheckOutTime\" = '{2}',\"U_Latitude\"  = '{3}'," +
+                                                          "\"U_Longitude\" = '{4}'"+
+                                                          " WHERE \"DocEntry\" ='{5}' AND  \"LineId\" ='{6}'",
+
+                           DataSource.bd(), U_CheckInTime2, U_CheckOutTime, U_Latitude, U_Longitude, DocEntry, LineId);
+
+                            connection.Open();
+                            HanaCommand command = new HanaCommand(strSQL, connection);
+                            HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+                            if (connection.State == ConnectionState.Open)
+                            {
+                                connection.Close();
+                            }
+
+                        }
+                        else
+                        {
+                            string U_Comments = data["VIS_DIS_DRT1Collection"]?[0]?["U_Comments"].ToString();
+                            string U_Delivered = data["VIS_DIS_DRT1Collection"]?[0]?["U_Delivered"].ToString();
+                            string U_ReturnReason = data["VIS_DIS_DRT1Collection"]?[0]?["U_ReturnReason"].ToString();
+
+                            string U_U_ReturnReasonText = data["VIS_DIS_DRT1Collection"]?[0]?["U_U_ReturnReasonText"].ToString();
+                            string ReturnReasonText = data["VIS_DIS_DRT1Collection"]?[0]?["U_U_ReturnReasonText"].ToString();
+                            string UserName = data["VIS_DIS_DRT1Collection"]?[0]?["U_UserName"].ToString();
+                            string UserCode = data["VIS_DIS_DRT1Collection"]?[0]?["U_UserCode"].ToString();
+
+                            string strSQL = string.Format("UPDATE {0}.\"@VIS_DIS_DRT1\" SET \"U_Comments\" = '{1}'," +
+                                                            "\"U_Delivered\" = '{2}',\"U_ReturnReason\"  = '{3}'," +
+                                                            "\"U_U_ReturnReasonText\" = '{4}', \"U_UserName\" = '{5}'," +
+                                                            "\"U_UserCode\" = '{6}' WHERE \"DocEntry\" ='{7}' AND  \"U_DocEntry\" ='{8}'",
+
+                             DataSource.bd(), U_Comments, U_Delivered, U_ReturnReason, U_U_ReturnReasonText, UserName, UserCode, dispatch.DocEntry,deliveryNote);
+                            connection.Open();
+                            HanaCommand command = new HanaCommand(strSQL, connection);
+                            HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+                            if (connection.State == ConnectionState.Open)
+                            {
+                                connection.Close();
+                            }
+
+                            //COMENTADO WARAGON (DEMORA EN ACTUALIZAR ENTREGA) new Task(async () => await updateStatusDeliveryNotesOrInvoices( deliveryNote, temp.U_Delivered, returnReasonText, sl.token)).Start();
+                            strSQL = string.Format("UPDATE {0}.\"ODLN\" SET \"U_SYP_DT_ESTDES\"='{1}', \"U_SYP_DT_OCUR\"='{2}' WHERE \"DocEntry\"='{3}'",
+                                 DataSource.bd(), U_Delivered, U_U_ReturnReasonText, deliveryNote);
+                            connection.Open();
+                             command = new HanaCommand(strSQL, connection);
+                             reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+
+                            if (connection.State == ConnectionState.Open)
+                            {
+                                connection.Close();
+                            }
+
+                            if (temp.U_Delivered == "A")
+                            {
+
+                                LoginSL sl = user.loginServiceLayer().GetAwaiter().GetResult();
+
+                                correoAlert.EnviarCorreoOffice365("Prueba API Ventas " + "Generacion de SLD Vistony",
+                                   "DocEntry Entrega " + deliveryNote + " " + returnReasonText + " " + temp.U_UserName);
+                                //MANTENER COMENTADO HASTA QUE SALGA A PRODUCCION LA GENERACION DE SOLICITUD DE DEVOLUCION AUTOMATICA
+                             //   await new Task(async () => await 
+                             //  await SolicitudDevolucion(deliveryNote, returnReasonText, sl.token);
+                            }
+
+                        }
+
                         dispatchResponseDetalle.LineId = temp.LineId;
                         dispatchResponseDetalle.Message = "Documento actualizado correctamente";
                         dispatchResponseDetalle.ErrorCode = "N";
 
-                        if (temp.U_Delivered!=null && returnReasonText!=null)
-                        {
+                        dispatchResponseListDetalle.Add(dispatchResponseDetalle);
 
-                            HanaConnection connection = GetConnection();
-                            //COMENTADO WARAGON (DEMORA EN ACTUALIZAR ENTREGA) new Task(async () => await updateStatusDeliveryNotesOrInvoices( deliveryNote, temp.U_Delivered, returnReasonText, sl.token)).Start();
-                            string strSQL = string.Format("UPDATE {0}.\"ODLN\" SET \"U_SYP_DT_ESTDES\"='{2}', \"U_SYP_DT_OCUR\"='{3}' WHERE \"DocEntry\"='{1}'", 
-                                DataSource.bd(), deliveryNote, temp.U_Delivered, returnReasonText);
-                            connection.Open();
-                            HanaCommand command = new HanaCommand(strSQL, connection);
-                            HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-                            connection.Close();
-                            // WARAGON new Task(async () => await updateStatusDeliveryNotesOrInvoices(deliveryNote, temp.U_Delivered, returnReasonText, sl.token)).Start();
-                            if (temp.U_Delivered =="A")
-                            {
-
-                              await new Task(async () => await SolicitudDevolucion(deliveryNote, returnReasonText));
-                            }
-                        }
                     }
-                    else
-                    {
-                        var responseBody = await response.Data.Content.ReadAsStringAsync();
-
-                        dispatchResponseDetalle.LineId = temp.LineId;
-                        dispatchResponseDetalle.Message = "Ocurrio un error al actualizar el documento:\n " + responseBody.ToString();
-                        dispatchResponseDetalle.ErrorCode = "Y";
-                    }
-                    dispatchResponseListDetalle.Add(dispatchResponseDetalle);
-                }
 
                 dispatchResponse.Details= dispatchResponseListDetalle;
                 dispatchResponseList.Add(dispatchResponse);
@@ -729,11 +816,25 @@ namespace SAP_Core.DAL
                 //await recountDeliveredSucess( dispatch.DocEntry);
             }
 
+            }
+            catch (Exception ex)
+            {
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Despacho update Vistony", ex.Message.ToString());
+            }
+            finally
+            {
+                user.LogoutServiceLayer().GetAwaiter().GetResult();
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+            }
             return new ResponseData()
             {
                 Data = new DispatchResponseList(){ Dispatch=dispatchResponseList },
                 StatusCode=HttpStatusCode.OK
             };
+
         }
 
         #region Disposable

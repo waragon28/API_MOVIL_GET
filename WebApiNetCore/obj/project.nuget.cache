@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "PZ5Bqupx+bs6qal51Jupf7EdCIJjAqN/9Tv0L/GiUuiCemOfZSOTfNQe5AFmmFGIJJrot4mtea/dYEviSfZOlA==",
+  "dgSpecHash": "eYCaR5mBX70=",
   "success": true,
-  "projectFilePath": "C:\\Users\\waragon\\Desktop\\API_Mobil_Get\\WebApiNetCore\\WebApiNetCore.csproj",
+  "projectFilePath": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\WebApiNetCore\\WebApiNetCore.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\waragon\\.nuget\\packages\\awssdk.core\\3.7.2.5\\awssdk.core.3.7.2.5.nupkg.sha512",
     "C:\\Users\\waragon\\.nuget\\packages\\awssdk.s3\\3.7.1.25\\awssdk.s3.3.7.1.25.nupkg.sha512",

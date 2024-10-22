@@ -32,6 +32,7 @@ using Newtonsoft.Json;
 using Azure.Core;
 using System.IdentityModel.Tokens.Jwt;
 using ZXing.Aztec.Internal;
+using WebApiNetCore.DAL;
 
 
 //using System.Configuration;
@@ -42,66 +43,13 @@ namespace SAP_Core.DAL
    public  class ApprovalDAL : Connection,IDisposable 
     {
         private ServiceLayer serviceLayer;
+        CorreoAlert correoAlert = new CorreoAlert();
+
         public ApprovalDAL(IMemoryCache _memoryCache)
         {
             serviceLayer = new(_memoryCache);
         }
-        public string UpdateB2B(List<ListUpdateB2B_Approval> listUpdateB2B_Approval)
-        {
-            HanaDataReader reader;
-            HanaConnection connection = GetConnection();
-            List<ListUpdateB2B_Approval> ObjlistUpdateB2B_Approval = new List<ListUpdateB2B_Approval>();
-            string Result = string.Empty;
 
-            try
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-                // Iterar sobre cada elemento del arreglo
-                foreach (var item in listUpdateB2B_Approval)
-                {
-
-                }
-
-                    connection.Open();
-                HanaCommand command = new HanaCommand("", connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-
-
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                            
-                    }
-                }
-
-                connection.Close();
-            }
-            catch (Exception ex)
-            {
-
-                if (connection.State != ConnectionState.Open)
-                {
-                    connection.Open();
-                }
-
-                Result = ex.Message.ToString();
-
-                connection.Close();
-            }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-            }
-            return Result;
-        }
         public ListApprovalBo Get_Documents (string user,string status)
         {
             HanaDataReader reader;
@@ -150,6 +98,8 @@ namespace SAP_Core.DAL
             }
             catch (Exception ex)
             {
+
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_Documents DAL Vistony", ex.Message.ToString());
 
                 if (connection.State != ConnectionState.Open)
                 {
@@ -223,6 +173,7 @@ namespace SAP_Core.DAL
             catch (Exception ex)
             {
 
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Documentos DAL Vistony", ex.Message.ToString());
                 if (connection.State != ConnectionState.Open)
                 {
                     connection.Open();
@@ -292,6 +243,8 @@ namespace SAP_Core.DAL
             }
             catch (Exception ex)
             {
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_Deuda DAL Vistony", ex.Message.ToString());
+
                 if (connection.State != ConnectionState.Open)
                 {
                     connection.Open();
@@ -361,6 +314,8 @@ namespace SAP_Core.DAL
             }
             catch (Exception ex)
             {
+
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_Linea DAL Vistony", ex.Message.ToString());
 
                 if (connection.State != ConnectionState.Open)
                 {
@@ -436,6 +391,8 @@ namespace SAP_Core.DAL
             }
             catch (Exception ex)
             {
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_Cliente DAL Vistony", ex.Message.ToString());
+
                 if (connection.State == ConnectionState.Open)
                 {
                     connection.Close();
@@ -508,6 +465,8 @@ namespace SAP_Core.DAL
             }
             catch (Exception ex)
             {
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_Pedidos DAL Vistony", ex.Message.ToString());
+
                 if (connection.State == ConnectionState.Open)
                 {
                     connection.Close();
@@ -585,6 +544,7 @@ namespace SAP_Core.DAL
             }
             catch (Exception ex)
             {
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_PedidosDetalle DAL Vistony", ex.Message.ToString());
                 if (connection.State == ConnectionState.Open)
                 {
                     connection.Close();
@@ -652,6 +612,8 @@ namespace SAP_Core.DAL
             }
             catch (Exception ex)
             {
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_Rules DAL Vistony", ex.Message.ToString());
+
                 if (connection.State == ConnectionState.Open)
                 {
                     connection.Close();
@@ -719,6 +681,8 @@ namespace SAP_Core.DAL
             }
             catch (Exception ex)
             {
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_Anexos DAL Vistony", ex.Message.ToString());
+
                 if (connection.State == ConnectionState.Open)
                 {
                     connection.Close();
@@ -905,6 +869,8 @@ namespace SAP_Core.DAL
             }
             catch (Exception ex)
             {
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_PriceHistory DAL Vistony", ex.Message.ToString());
+
                 if (connection.State == ConnectionState.Open)
                 {
                     connection.Close();
@@ -967,6 +933,9 @@ namespace SAP_Core.DAL
                 }
                 catch (Exception ex)
                 {
+
+                    correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval decicion DAL Vistony", ex.Message.ToString());
+
                     if (connection.State == ConnectionState.Open)
                     {
                         connection.Close();
@@ -1028,6 +997,8 @@ namespace SAP_Core.DAL
                 }
                 catch (Exception ex)
                 {
+                    correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval decicion DAL Vistony 2", ex.Message.ToString());
+
                     if (connection.State == ConnectionState.Open)
                     {
                         connection.Close();
@@ -1057,6 +1028,7 @@ namespace SAP_Core.DAL
         }
 
         #region Disposable
+
 
 
 

@@ -343,8 +343,40 @@ namespace SAP_Core.DAL
             {
                 throw;
             }
+            finally
+            {
+
+            }
         }
-#region Disposable
+
+        public async Task LogoutServiceLayer()
+        {
+            try
+            {
+                string url = Startup.Configuration.GetValue<string>("SL:Logout");
+;
+                HttpClientHandler clientHandler = new()
+                {
+                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; }
+                };
+
+                HttpClient cliente = new(clientHandler);
+                StringContent content = new("", Encoding.UTF8, "application/json");
+
+                var respuesta = await cliente.PostAsync(url, content);
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+
+            }
+        }
+
+        #region Disposable
 
 
 

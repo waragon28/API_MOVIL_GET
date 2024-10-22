@@ -1,16 +1,25 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using GoogleApi.Entities.Maps.DistanceMatrix.Response;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Kiota.Abstractions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SalesForce.BO;
 using SalesForce.Util;
+using Sap.Data.Hana;
 using SAP_Core.DAL;
+using SAP_Core.Utils;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
+using ThirdParty.Json.LitJson;
 using WebApiNetCore.BO;
 using static WebApiNetCore.Utils.Other;
+using Method = WebApiNetCore.Utils.Other.Method;
 
 namespace WebApiNetCore.DAL
 {
@@ -22,6 +31,120 @@ namespace WebApiNetCore.DAL
         public InspeccionVehiculoDAL(IMemoryCache _memoryCache)
         {
             serviceLayer = new(_memoryCache);
+        }
+
+
+        public async Task<ResponseData> InicioRutaSMS(int DocNum)
+        {
+            ResponseData rs = new ResponseData();
+            HanaDataReader reader;
+            HanaConnection connection = GetConnection();
+            string fechaActual = DateTime.Now.ToString("yyyyMMdd");
+            string strSQL = string.Format("CALL {0}.APP_NRO_CLIENTE ('{1}','{2}')", DataSource.bd(), DocNum, fechaActual);
+
+            try
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+                connection.Open();
+                HanaCommand command = new HanaCommand(strSQL, connection);
+
+                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+
+                // La URL de tu API
+                string url = "http://192.168.254.20:88/vs1.0/sms";
+
+                // El objeto que necesitas serializar a JSON
+              
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        string Mensaje = string.Format("VISTONY : Hola {0} " + ".." +
+                                    "Nos complace informarle que su pedido {1} se encuentra en ruta hacia su destino. " + ".." +
+                                    "Queremos garantizar que su compra llegue a usted en perfectas condiciones y en el tiempo estipulado. ",
+                                                reader["CardName"].ToString()
+                                    , reader["U_NumAtCard"].ToString()); // NUMERO DE FACTURA F00X-XXXXXXXX
+                        var cabeceraMensaje = cabecera_mensaje(Mensaje, "51" +"986686967"/*reader["Phone1"].ToString()*/);
+
+                        // Serializa el objeto a JSON
+                        string jsonData = JsonConvert.SerializeObject(cabeceraMensaje);
+
+                        // Llama al método que envía la solicitud POST
+                        var result = await PostRequestAsync(url, jsonData);
+
+                        string time = DateTime.Now.ToString("hhmm");
+                        StartRoute objStartRoute = startRoute("Y", Convert.ToInt32(time));
+                        string jsonData2 = JsonConvert.SerializeObject(objStartRoute);
+                        ResponseData response = await serviceLayer.Request("/b1s/v1/VIS_DIS_ODRT", Method.POST, jsonData2);
+                    }
+                }
+                connection.Close();
+            }
+            catch (Exception ex)
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+                if (connection.State != ConnectionState.Open)
+                {
+                    connection.Open();
+                }
+
+                strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "InicioRutaSMS - " + ex.Message + " - ");
+                HanaCommand command = new HanaCommand(strSQL, connection);
+
+                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+                connection.Close();
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+            }
+            return rs;
+        }
+        public StartRoute startRoute(string Value, int Hora)
+        {
+            StartRoute startRoute = new StartRoute();
+            startRoute.U_SendSMS = Value;
+            startRoute.U_StartTime = Hora;
+            return startRoute;
+        }
+        private static readonly HttpClient client = new HttpClient();
+        public Cabecera_Mensaje cabecera_mensaje(string Mensaje, string Numero)
+        {
+            List<Cabecera_Mensaje> ListCabecera_Mensaje = new List<Cabecera_Mensaje>();
+            Cabecera_Mensaje objCabecera_Mensaje = new Cabecera_Mensaje();
+            objCabecera_Mensaje.Data = DetalleMensaje(Mensaje, Numero);
+            return objCabecera_Mensaje;
+        }
+        public List<Data> DetalleMensaje(string Mensaje, string Numero)
+        {
+            List<Data> ListData = new List<Data>();
+            Data objData = new Data();
+            objData.Mensaje = Mensaje;
+            objData.NumeroTelf = Numero;
+            ListData.Add(objData);
+            return ListData;
+        }
+
+
+        // Método para enviar la solicitud POST
+        public static async Task<HttpResponseMessage> PostRequestAsync(string url, string jsonData)
+        {
+            // Crea el contenido de la solicitud como JSON
+            var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+
+            // Enviar la solicitud POST
+            HttpResponseMessage response = await client.PostAsync(url, content);
+
+            return response;
         }
 
         public async Task<ResponseData> insert(string jsonPayload)
@@ -37,8 +160,10 @@ namespace WebApiNetCore.DAL
                 // Leer el valor de DocEntry
                 int DocNum = (int)obj["DocNum"];
 
-               // responseBody = JsonConvert.DeserializeObject(responseBody.ToString());
+                // responseBody = JsonConvert.DeserializeObject(responseBody.ToString());  /* await new Task(async () => await*/ SolicitudDevolucion(deliveryNote, returnReasonText, sl.token)/*)*/;
 
+                // Lanza InicioRutaSMS de manera asíncrona sin bloquear
+                Task.Run(() => InicioRutaSMS(DocNum));
                 response.Data ="Se creo la Inspeccion de Vehculo Nº "+DocNum;
                 response.StatusCode = HttpStatusCode.OK;
             }

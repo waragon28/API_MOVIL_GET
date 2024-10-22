@@ -46,7 +46,6 @@ namespace WebApiNetCore.DAL
                         ObjSolicitudDevolucion.PaymentGroupCode = Convert.ToInt32(reader["DocDate"].ToString());
                         ObjSolicitudDevolucion.SalesPersonCode = Convert.ToInt32( reader["DocDate"].ToString());
                         ObjSolicitudDevolucion.DocumentsOwner = Convert.ToInt32( reader["DocDate"].ToString());
-                        ObjSolicitudDevolucion.ContactPersonCode = Convert.ToInt32(reader["DocDate"].ToString());
                         ObjSolicitudDevolucion.TaxDate = reader["DocDate"].ToString();
                         ObjSolicitudDevolucion.DocObjectCode = "oReturnRequest";
                         ObjSolicitudDevolucion.ShipToCode = reader["DocDate"].ToString();

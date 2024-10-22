@@ -29,6 +29,8 @@ namespace WebApiNetCore.BO
         public string U_VIST_CTAINGDCTO { get; set; }
         public string U_VIS_PromID { get; set; }
         public string U_VIS_PromLineID { get; set; }
+        public string TaxOnly { get; set; }
+        
     }
      public class SolicitudDevolucion
     {
@@ -43,7 +45,6 @@ namespace WebApiNetCore.BO
         public int PaymentGroupCode { get; set; }
         public int SalesPersonCode { get; set; }
         public int DocumentsOwner { get; set; }
-        public int ContactPersonCode { get; set; }
         public int Series { get; set; }
         public string TaxDate { get; set; }
         public string DocstringCode { get; set; }

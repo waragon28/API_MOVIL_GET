@@ -212,6 +212,8 @@ namespace SAP_Core.BO
         public string CardCode { get; set; }
         public string DeliveryLegalNumber { get; set; }
         public string DeliveryNum { get; set; }
+
+        //public int DocNumSLD { get; set; } //QA
         public string InvoiceLegalNumber { get; set; }
         public string InvoiceNum { get; set; }
         public int Item { get; set; }

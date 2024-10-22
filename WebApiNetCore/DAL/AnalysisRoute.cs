@@ -9,11 +9,14 @@ using Sap.Data.Hana;
 using System.Configuration;
 using System.Data;
 using SAP_Core.Utils;
+using WebApiNetCore.DAL;
 
 namespace SAP_Core.DAL
 {
     public class AnalysisRouteDAL : Connection, IDisposable
     {
+        CorreoAlert correoAlert = new CorreoAlert();
+
         public ListAnalysisRoute GetAnalysis(string imei, string dia)
         {
             HanaDataReader reader;
@@ -79,6 +82,9 @@ namespace SAP_Core.DAL
             }
             catch (Exception ex)
             {
+
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Analysis Controller Vistony", ex.Message.ToString());
+
                 if (connection.State == ConnectionState.Open)
                 {
                     connection.Close();

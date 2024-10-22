@@ -19,6 +19,8 @@ using System.Text.Json;
 using System.Net;
 using static WebApiNetCore.Utils.Other;
 using Microsoft.IdentityModel.Tokens;
+using WebApiNetCore.DAL;
+using System.Runtime.ConstrainedExecution;
 
 namespace SAP_Core.DAL
 {
@@ -29,6 +31,8 @@ namespace SAP_Core.DAL
         private static readonly string _awsSecretKey = Startup.Configuration.GetValue<string>("S3:AWSSecretKey");
         private static readonly string _endpoingURL = Startup.Configuration.GetValue<string>("S3:EndpoingURL");
         private static readonly string _bucketName = Startup.Configuration.GetValue<string>("S3:Bucketname");
+
+        CorreoAlert correoAlert = new CorreoAlert();
 
         public ClienteDAL(IMemoryCache _memoryCache)
         {
@@ -107,6 +111,7 @@ namespace SAP_Core.DAL
                     connection.Open();
                 }
 
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Cliente GetClientes DAL Vistony", ex.Message.ToString());
                 strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Despacho_GetClientes - " + ex.Message + " - " + imei);
                 HanaCommand command = new HanaCommand(strSQL, connection);
 
@@ -198,6 +203,7 @@ namespace SAP_Core.DAL
                 strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Despacho_GetClientes - " + ex.Message + " - " + imei+" "+cli);
                 HanaCommand command = new HanaCommand(strSQL, connection);
 
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Cliente GetCliente DAL Vistony", ex.Message.ToString());
                 reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
                 connection.Close();
             }
@@ -231,7 +237,7 @@ namespace SAP_Core.DAL
             List<LineEconomic_Activity> ListLineEconomic_Activity = new List<LineEconomic_Activity>();
             LineEconomic_Activity ObjtLineEconomic_Activity = new LineEconomic_Activity();
             ClienteBO2 cliente = new ClienteBO2();
-            string strSQL = string.Format("CALL {0}.APP_ECONOMIC_ACTIVITY ('{1}')", DataSource.bd(), imei); // QA BOLIVIA TITO
+            string strSQL = string.Format("CALL {0}.APP_ECONOMIC_ACTIVITY ('{1}')", DataSource.bd(), imei);
 
             try
             {
@@ -271,6 +277,7 @@ namespace SAP_Core.DAL
                 strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Despacho_GetClientes2 - " + ex.Message + " - " + imei);
                 HanaCommand command = new HanaCommand(strSQL, connection);
 
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Cliente GetActivity_Economic DAL Vistony", ex.Message.ToString());
                 reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
                 connection.Close();
             }
@@ -292,7 +299,7 @@ namespace SAP_Core.DAL
             //List<DireccionClienteBO> listDireccion = null;
             ClienteBO2 cliente = new ClienteBO2();
             //string strSQL = string.Format("CALL {0}.APP_CUSTOMERS3 ('{1}')", DataSource.bd(), imei);
-            string strSQL = string.Format("CALL {0}.APP_CUSTOMERS3 ('{1}')", DataSource.bd(), imei); // QA BOLIVIA TITO
+            string strSQL = string.Format("CALL {0}.APP_CUSTOMERS3 ('{1}')", DataSource.bd(), imei);
 
             try
             {
@@ -357,6 +364,7 @@ namespace SAP_Core.DAL
                 strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Despacho_GetClientes2 - " + ex.Message + " - " + imei );
                 HanaCommand command = new HanaCommand(strSQL, connection);
 
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Cliente GetClientes2 DAL Vistony", ex.Message.ToString());
                 reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
                 connection.Close();
             }
@@ -436,6 +444,7 @@ namespace SAP_Core.DAL
                 strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Despacho_GetClientesDespacho - " + ex.Message + " - " + imei+" "+fecha);
                 HanaCommand command = new HanaCommand(strSQL, connection);
 
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Cliente GetClientesDespacho DAL Vistony", ex.Message.ToString());
                 reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
                 connection.Close();
             }
@@ -453,8 +462,9 @@ namespace SAP_Core.DAL
         public async Task<ResponseData> update(inAddressesList addressesList)
         {
             List<AddressResponse> addressResponseList = new();
-
-            var s3ClientConfig = new AmazonS3Config
+            try
+            {
+ var s3ClientConfig = new AmazonS3Config
             {
                 ServiceURL = _endpoingURL
             };
@@ -547,6 +557,17 @@ namespace SAP_Core.DAL
                 addressResponseList.Add(addressResponse);
             }
 
+            }
+            catch (Exception ex)
+            {
+
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Cliente update DAL Vistony", ex.Message.ToString());
+            }
+            finally
+            {
+
+            }
+           
             return new ResponseData()
             {
                 Data = new AddressResponseList(){ Addresses= addressResponseList },
@@ -649,6 +670,7 @@ namespace SAP_Core.DAL
                 strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Despacho_getValidateCredit - " + ex.Message + " - " + salesPerson + " " + day);
                 HanaCommand command = new HanaCommand(strSQL, connection);
 
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Cliente getValidateCredit DAL Vistony", ex.Message.ToString());
                 reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
                 connection.Close();
             }

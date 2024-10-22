@@ -10015,19 +10015,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\waragon\\.nuget\\packages\\": {}
+    "C:\\Users\\waragon\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\waragon\\Desktop\\API_Mobil_Get\\MSTestSalesForece\\MSTestSalesForece.csproj",
+      "projectUniqueName": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\MSTestSalesForece\\MSTestSalesForece.csproj",
       "projectName": "MSTestSalesForece",
-      "projectPath": "C:\\Users\\waragon\\Desktop\\API_Mobil_Get\\MSTestSalesForece\\MSTestSalesForece.csproj",
+      "projectPath": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\MSTestSalesForece\\MSTestSalesForece.csproj",
       "packagesPath": "C:\\Users\\waragon\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\waragon\\Desktop\\API_Mobil_Get\\MSTestSalesForece\\obj\\",
+      "outputPath": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\MSTestSalesForece\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
         "C:\\Users\\waragon\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -10035,14 +10040,15 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net5.0": {
           "targetAlias": "net5.0",
           "projectReferences": {
-            "C:\\Users\\waragon\\Desktop\\API_Mobil_Get\\WebApiNetCore\\WebApiNetCore.csproj": {
-              "projectPath": "C:\\Users\\waragon\\Desktop\\API_Mobil_Get\\WebApiNetCore\\WebApiNetCore.csproj"
+            "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\WebApiNetCore\\WebApiNetCore.csproj": {
+              "projectPath": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\WebApiNetCore\\WebApiNetCore.csproj"
             }
           }
         }
@@ -10051,6 +10057,11 @@
         "warnAsError": [
           "NU1605"
         ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
       }
     },
     "frameworks": {
@@ -10090,7 +10101,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.302\\RuntimeIdentifierGraph.json"
       }
     }
   }

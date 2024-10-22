@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApiNetCore.DAL;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -14,6 +15,8 @@ namespace WebApiNetCore.Controllers
     [ApiController]
     public class AgenciesController : ControllerBase
     {
+        CorreoAlert correoAlert = new CorreoAlert();
+
         [HttpGet]
         public IActionResult Get(string imei)
         {
@@ -28,10 +31,14 @@ namespace WebApiNetCore.Controllers
                 agencias = agencia.GetAgencias(imei);
                 return Ok(agencias);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
                 //Log.save(this, e.Message);
-                return BadRequest("No se pudo concluir la busqueda");
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Agencies Controller Vistony", ex.Message.ToString());
+                return BadRequest("No se pudo concluir la busqueda " + ex.Message.ToString());
+            }
+            finally
+            {
 
             }
         }

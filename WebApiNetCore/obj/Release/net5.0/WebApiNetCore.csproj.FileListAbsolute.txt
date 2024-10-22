@@ -423,10 +423,4 @@ C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\bin\Release\net5.0\Std.UriT
 C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\bin\Release\net5.0\System.ClientModel.dll
 C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\bin\Release\net5.0\System.IdentityModel.Tokens.Jwt.dll
 C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\bin\Release\net5.0\System.Memory.Data.dll
-C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\obj\Release\net5.0\WebApiNetCore.sourcelink.json
-C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\obj\Release\net5.0\staticwebassets\WebApiNetCore.StaticWebAssets.Pack.cache
-C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\obj\Release\net5.0\staticwebassets\msbuild.WebApiNetCore.Microsoft.AspNetCore.StaticWebAssets.props
-C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\obj\Release\net5.0\staticwebassets\msbuild.build.WebApiNetCore.props
-C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\obj\Release\net5.0\staticwebassets\msbuild.buildMultiTargeting.WebApiNetCore.props
-C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\obj\Release\net5.0\staticwebassets\msbuild.buildTransitive.WebApiNetCore.props
 C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\obj\Release\net5.0\refint\WebApiNetCore.dll

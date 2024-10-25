@@ -142,8 +142,8 @@ namespace SAP_Core.DAL
             string value = "";
             HanaDataReader reader;
             HanaConnection connection = GetConnection();
-            //string strSQL = string.Format("CALL {0}.APP_DESPACHO_LIST_CLIENT_QA('{1}','{2}')",DataSource.bd(), fecha, imei); //QA
-            string strSQL = string.Format("CALL {0}.APP_DESPACHO_LIST_CLIENT('{1}','{2}')",DataSource.bd(), fecha, imei);
+           string strSQL = string.Format("CALL {0}.APP_DESPACHO_LIST_CLIENT_QA('{1}','{2}')",DataSource.bd(), fecha, imei); //QA
+          //  string strSQL = string.Format("CALL {0}.APP_DESPACHO_LIST_CLIENT('{1}','{2}')",DataSource.bd(), fecha, imei);
             try
             {
                 if (connection.State == ConnectionState.Open)
@@ -254,6 +254,7 @@ namespace SAP_Core.DAL
 
         private async Task recountDeliveredSucess(int docEntry)
         {
+
             string json = "";
             HanaDataReader reader;
             HanaConnection connection = GetConnection();
@@ -275,8 +276,11 @@ namespace SAP_Core.DAL
                         data.Add("CountSuccess", Convert.ToInt32(reader["CountSuccess"]));
                         data.Add("CountFailed", Convert.ToInt32(reader["CountFailed"]));
                     }
+
+                    LoginSL sl = user.loginServiceLayer().GetAwaiter().GetResult();
+
                     string jsonString = "{\"U_SuccessQuantity\":" + data["CountSuccess"] + ",\"U_FailedQuantity\":" + data["CountFailed"] + "}";
-                    await serviceLayer.Request("/b1s/v1/VIS_DIS_ODRT(" + docEntry + ")", Method.PATCH, jsonString);
+                    await serviceLayer.Request("/b1s/v1/VIS_DIS_ODRT(" + docEntry + ")", Method.PATCH, jsonString, sl.token);
                 }
             }
             catch (Exception ex)
@@ -294,12 +298,13 @@ namespace SAP_Core.DAL
             finally
             {
                 connection.Close();
+                user.LogoutServiceLayer().GetAwaiter().GetResult();
             }
         }
 
-        private async Task updateStatusDeliveryNotesOrInvoices(string docEntry,string status,string returnReasonText, string sessionId)
+       /* private async Task updateStatusDeliveryNotesOrInvoices(string docEntry,string status,string returnReasonText, string sessionId)
         {
-            /*
+            
              * COMENTADO WARAGON
              * string jsonString = "{\"U_SYP_DT_ESTDES\":\""+ status + "\"}";
             if (status!="E" && returnReasonText != null)
@@ -313,7 +318,7 @@ namespace SAP_Core.DAL
             {
                 endPoint = "Invoices";
             }
-            */
+            
             //  ResponseData response = await serviceLayer.Request( String.Format("/b1s/v1/{0}({1})", endPoint, docEntry), Method.PATCH, jsonString, sessionId);
 
             string endPoint = "DeliveryNotes";
@@ -380,14 +385,31 @@ namespace SAP_Core.DAL
                 }
                 
             }
-        }
+        }*/
 
         public async Task<ResponseData> changeStatus(string id, int line,string status)
         {
             string jsonString = "{\"Code\":\"" + id + "\",\"VIS_INC1Collection\":[{\"Code\":\""+id+"\",\"LineId\":"+ line + ",\"U_Inactive\":\""+status+"\"}]}";
 
-            ResponseData response=await serviceLayer.Request( String.Format("/b1s/v1/VIS_OINC('{0}')", id), Method.PATCH, jsonString);
+            ResponseData response=null;
+            try
+            {
 
+
+                LoginSL sl = user.loginServiceLayer().GetAwaiter().GetResult();
+                response = await serviceLayer.Request(String.Format("/b1s/v1/VIS_OINC('{0}')", id), Method.PATCH, jsonString, sl.token);
+
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;
+                response.Data  = ex.Message.ToString();
+            }
+            finally
+            {
+                user.LogoutServiceLayer().GetAwaiter().GetResult();
+            }
+               
             return new ResponseData()
             {
                 Data = response.Data,
@@ -399,21 +421,37 @@ namespace SAP_Core.DAL
         {
             dynamic data = Newtonsoft.Json.JsonConvert.DeserializeObject(payload.ToString());
             List<dynamic> listRespondeData = new List<dynamic>();
+            ResponseData response = null;
+            LoginSL sl = user.loginServiceLayer().GetAwaiter().GetResult();
 
-            foreach (dynamic subData in data["Data"])
+            try
             {
-                if (subData["SAP"] == "") {
-                    string jsonString = "{\"Warehouse\":\""+ subData["Warehouse"] + "\",\"Sublevel1\":\""+ subData["Sublevel1"] + "\",\"Sublevel2\":\""+ subData["Sublevel2"] + "\",\"Sublevel3\":\""+ subData["SubLevel3"] + "\",\"BinCode\":\""+ subData["BinCode"] + "\",\"Inactive\":\"tNO\",\"Description\":\"Ubicación  " + subData["BinCode"] + "\"}";
+                foreach (dynamic subData in data["Data"])
+                {
+                    if (subData["SAP"] == "")
+                    {
+                        string jsonString = "{\"Warehouse\":\"" + subData["Warehouse"] + "\",\"Sublevel1\":\"" + subData["Sublevel1"] + "\",\"Sublevel2\":\"" + subData["Sublevel2"] + "\",\"Sublevel3\":\"" + subData["SubLevel3"] + "\",\"BinCode\":\"" + subData["BinCode"] + "\",\"Inactive\":\"tNO\",\"Description\":\"Ubicación  " + subData["BinCode"] + "\"}";
 
-                    ResponseData response = await serviceLayer.Request(String.Format("/b1s/v1/BinLocations"),Method.POST, jsonString);
-                    listRespondeData.Add(response.Data);
+                        response = await serviceLayer.Request(String.Format("/b1s/v1/BinLocations"), Method.POST, jsonString, sl.token);
+                        listRespondeData.Add(response.Data);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;
+                response.Data = ex.Message.ToString();
+            }
+            finally
+            {
+                user.LogoutServiceLayer().GetAwaiter().GetResult();
+            }
+           
             
             return new ResponseData()
             {
                 Data = listRespondeData,
-                StatusCode = HttpStatusCode.OK
+                StatusCode = response.StatusCode
             };
         }
 
@@ -571,6 +609,8 @@ namespace SAP_Core.DAL
 
                     string XD = ""; 
                     var XX = response.Data.Content.ReadAsStringAsync();
+                  //  correoAlert.EnviarCorreoOffice365("Prueba API Ventas " + "Generacion POST de SLD Vistony",
+                   //               "DocEntry Entrega " + XX);
                 }
 
                 
@@ -634,6 +674,37 @@ namespace SAP_Core.DAL
                 }
             }
             return LsDocumentLinew;
+        }
+
+
+        public void ActualizarAvance(string DocEntryRuta)
+        {
+            HanaConnection connection = GetConnection();
+            try
+            {
+                string strSQL = string.Format("CALL {0}.VIS_UPDATE_STATUS_DESPACHOS('{1}')",
+                            DataSource.bd(), DocEntryRuta);
+                connection.Open();
+                HanaCommand command = new HanaCommand(strSQL, connection);
+                HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+            }
+
         }
 
 
@@ -750,6 +821,8 @@ namespace SAP_Core.DAL
                                 connection.Close();
                             }
 
+                            //ActualizarAvance(DocEntry);
+
                         }
                         else
                         {
@@ -793,13 +866,13 @@ namespace SAP_Core.DAL
 
                                 LoginSL sl = user.loginServiceLayer().GetAwaiter().GetResult();
 
-                                correoAlert.EnviarCorreoOffice365("Prueba API Ventas " + "Generacion de SLD Vistony",
-                                   "DocEntry Entrega " + deliveryNote + " " + returnReasonText + " " + temp.U_UserName);
                                 //MANTENER COMENTADO HASTA QUE SALGA A PRODUCCION LA GENERACION DE SOLICITUD DE DEVOLUCION AUTOMATICA
                              //   await new Task(async () => await 
-                             //  await SolicitudDevolucion(deliveryNote, returnReasonText, sl.token);
+                              await SolicitudDevolucion(deliveryNote, returnReasonText, sl.token);
+                             //QA
                             }
-
+                            
+                            //ActualizarAvance(Convert.ToString(dispatch.DocEntry));
                         }
 
                         dispatchResponseDetalle.LineId = temp.LineId;
@@ -813,7 +886,7 @@ namespace SAP_Core.DAL
                 dispatchResponse.Details= dispatchResponseListDetalle;
                 dispatchResponseList.Add(dispatchResponse);
 
-                //await recountDeliveredSucess( dispatch.DocEntry);
+                await recountDeliveredSucess( dispatch.DocEntry);
             }
 
             }

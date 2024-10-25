@@ -33,6 +33,7 @@ namespace SAP_Core.DAL
         private static readonly string _bucketName = Startup.Configuration.GetValue<string>("S3:Bucketname");
 
         CorreoAlert correoAlert = new CorreoAlert();
+        UsuarioDAL user = new UsuarioDAL();
 
         public ClienteDAL(IMemoryCache _memoryCache)
         {
@@ -464,12 +465,14 @@ namespace SAP_Core.DAL
             List<AddressResponse> addressResponseList = new();
             try
             {
- var s3ClientConfig = new AmazonS3Config
+                var s3ClientConfig = new AmazonS3Config
             {
                 ServiceURL = _endpoingURL
             };
 
-            IAmazonS3 s3Client = new AmazonS3Client(_awsAccessKey, _awsSecretKey, s3ClientConfig);
+                LoginSL sl = user.loginServiceLayer().GetAwaiter().GetResult();
+
+                IAmazonS3 s3Client = new AmazonS3Client(_awsAccessKey, _awsSecretKey, s3ClientConfig);
 
             DateTime localDate = DateTime.Now;
 
@@ -514,20 +517,22 @@ namespace SAP_Core.DAL
 
 
                 string jsonclienteDatos = JsonSerializer.Serialize(clienteDatos);
-                ResponseData responseClienteDatos = await serviceLayer.Request("/b1s/v1/BusinessPartners('" + address.CardCode + "')", Method.PATCH, jsonclienteDatos);
+
+
+                ResponseData responseClienteDatos = await serviceLayer.Request("/b1s/v1/BusinessPartners('" + address.CardCode + "')", Method.PATCH, jsonclienteDatos, sl.token);
 
 
 
                 string jsonString = "{\"BPAddresses\":[" + JsonSerializer.Serialize(temp) + "]}";
 
 
-                ResponseData response = await serviceLayer.Request( "/b1s/v1/BusinessPartners('" + address.CardCode + "')", Method.PATCH, jsonString);
-                AddressResponse addressResponse = new();
+                ResponseData response = await serviceLayer.Request( "/b1s/v1/BusinessPartners('" + address.CardCode + "')", Method.PATCH, jsonString, sl.token);
+                    AddressResponse addressResponse = new();
 
                 string vconfirmaDatosClie = JsonSerializer.Serialize(confirmaDatosClie);
-                ResponseData responsevconfirmaDatosClie = await serviceLayer.Request("/b1s/v1/VIS_OCRD_OCDC", Method.POST, vconfirmaDatosClie);
-               /// string X = responsevconfirmaDatosClie.Data.Content.ReadAsStringAsync();
-                if (response.StatusCode == HttpStatusCode.NoContent && 
+                ResponseData responsevconfirmaDatosClie = await serviceLayer.Request("/b1s/v1/VIS_OCRD_OCDC", Method.POST, vconfirmaDatosClie, sl.token);
+                    /// string X = responsevconfirmaDatosClie.Data.Content.ReadAsStringAsync();
+                    if (response.StatusCode == HttpStatusCode.NoContent && 
                     responseClienteDatos.StatusCode == HttpStatusCode.NoContent && 
                     responsevconfirmaDatosClie.StatusCode == HttpStatusCode.Created)
                 {
@@ -565,7 +570,7 @@ namespace SAP_Core.DAL
             }
             finally
             {
-
+                user.LogoutServiceLayer().GetAwaiter().GetResult();
             }
            
             return new ResponseData()

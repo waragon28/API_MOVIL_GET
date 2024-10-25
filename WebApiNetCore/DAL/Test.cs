@@ -3,6 +3,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using SalesForce.BO;
 using SalesForce.Util;
+using SAP_Core.BO;
 using SAP_Core.DAL;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace WebApiNetCore.DAL
     {
         private ServiceLayer serviceLayer;
 
+        UsuarioDAL user = new UsuarioDAL();
         public TestDAL(IMemoryCache _memoryCache)
         {
             serviceLayer = new(_memoryCache);
@@ -25,20 +27,45 @@ namespace WebApiNetCore.DAL
         public async Task<ResponseData> getQR(ListTest value)
         {
             ResponseData response = new ResponseData();
-            foreach (Test item in value.ltest)
+
+            LoginSL sl = user.loginServiceLayer().GetAwaiter().GetResult();
+            try
             {
-                response = await serviceLayer.Request("/b1s/v1/QrCodes", Utils.Other.Method.POST, JsonConvert.SerializeObject(item));
-                var responseBody = await response.Data.Content.ReadAsStringAsync();
+                    foreach (Test item in value.ltest)
+                    {
+                        response = await serviceLayer.Request("/b1s/v1/QrCodes", Utils.Other.Method.POST, JsonConvert.SerializeObject(item), sl.token);
+                        var responseBody = await response.Data.Content.ReadAsStringAsync();
+                    }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+            }
+            finally
+            {
+                user.LogoutServiceLayer().GetAwaiter().GetResult();
             }
             return response;
         }
         public async Task<ResponseData> getBoM(ListBoM value)
         {
             ResponseData response = new ResponseData();
-            foreach (BoM item in value.lbom)
+            LoginSL sl = user.loginServiceLayer().GetAwaiter().GetResult();
+            try
             {
-                response = await serviceLayer.Request("/b1s/v1/ProductTrees('"+item.TreeCode+"')", Utils.Other.Method.PATCH, JsonConvert.SerializeObject(item));
-                var responseBody = await response.Data.Content.ReadAsStringAsync();
+                foreach (BoM item in value.lbom)
+                {
+                    response = await serviceLayer.Request("/b1s/v1/ProductTrees('" + item.TreeCode + "')", Utils.Other.Method.PATCH, JsonConvert.SerializeObject(item), sl.token);
+                    var responseBody = await response.Data.Content.ReadAsStringAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+            }
+            finally
+            {
+                user.LogoutServiceLayer().GetAwaiter().GetResult();
             }
             return response;
         }

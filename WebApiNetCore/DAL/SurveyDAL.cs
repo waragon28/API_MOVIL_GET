@@ -19,12 +19,15 @@ using Amazon.S3;
 using SalesForce.BO;
 using static WebApiNetCore.Utils.Other;
 using System.Net;
+using SAP_Core.BO;
+using SixLabors.ImageSharp.ColorSpaces;
 
 namespace WebApiNetCore.DAL
 {
     public class SurveyDAL : Connection, IDisposable
     {
         private ServiceLayer serviceLayer;
+        UsuarioDAL user = new UsuarioDAL();
         private bool disposedValue;
         private static readonly string _awsAccessKey = Startup.Configuration.GetValue<string>("S3:AWSAccessKey");
         private static readonly string _awsSecretKey = Startup.Configuration.GetValue<string>("S3:AWSSecretKey");
@@ -112,6 +115,7 @@ namespace WebApiNetCore.DAL
             HanaDataReader reader;
             HanaConnection connection = GetConnection();
             var jsonArray = string.Empty;
+            LoginSL sl = user.loginServiceLayer().GetAwaiter().GetResult();
             try
             {
                 VIS_MKT_OENC objSurveyBO = new VIS_MKT_OENC();
@@ -211,7 +215,7 @@ namespace WebApiNetCore.DAL
                         // Serializar la instancia en formato JSON
                         string json = JsonConvert.SerializeObject(objSurveyBO);
              
-                         response = await serviceLayer.Request(String.Format("/b1s/v1/VIS_MKT_OENC"), Method.POST, json);
+                         response = await serviceLayer.Request(String.Format("/b1s/v1/VIS_MKT_OENC"), Method.POST, json, sl.token);
                       
                         if (response.StatusCode == HttpStatusCode.Created)
                         {
@@ -268,6 +272,7 @@ namespace WebApiNetCore.DAL
                 {
                     connection.Close();
                 }
+                user.LogoutServiceLayer().GetAwaiter().GetResult();
             }
             return response;
 

@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using SalesForce.BO;
 using SalesForce.Util;
 using Sap.Data.Hana;
+using SAP_Core.BO;
 using SAP_Core.DAL;
 using SAP_Core.Utils;
 using System;
@@ -27,6 +28,7 @@ namespace WebApiNetCore.DAL
     {
         private ServiceLayer serviceLayer;
         private bool disposedValue;
+        UsuarioDAL user = new UsuarioDAL();
 
         public InspeccionVehiculoDAL(IMemoryCache _memoryCache)
         {
@@ -42,6 +44,7 @@ namespace WebApiNetCore.DAL
             string fechaActual = DateTime.Now.ToString("yyyyMMdd");
             string strSQL = string.Format("CALL {0}.APP_NRO_CLIENTE ('{1}','{2}')", DataSource.bd(), DocNum, fechaActual);
 
+            LoginSL sl = user.loginServiceLayer().GetAwaiter().GetResult();
             try
             {
                 if (connection.State == ConnectionState.Open)
@@ -67,7 +70,7 @@ namespace WebApiNetCore.DAL
                                     "Queremos garantizar que su compra llegue a usted en perfectas condiciones y en el tiempo estipulado. ",
                                                 reader["CardName"].ToString()
                                     , reader["U_NumAtCard"].ToString()); // NUMERO DE FACTURA F00X-XXXXXXXX
-                        var cabeceraMensaje = cabecera_mensaje(Mensaje, "51" +"986686967"/*reader["Phone1"].ToString()*/);
+                        var cabeceraMensaje = cabecera_mensaje(Mensaje, "51"+ reader["Phone1"].ToString());
 
                         // Serializa el objeto a JSON
                         string jsonData = JsonConvert.SerializeObject(cabeceraMensaje);
@@ -78,7 +81,7 @@ namespace WebApiNetCore.DAL
                         string time = DateTime.Now.ToString("hhmm");
                         StartRoute objStartRoute = startRoute("Y", Convert.ToInt32(time));
                         string jsonData2 = JsonConvert.SerializeObject(objStartRoute);
-                        ResponseData response = await serviceLayer.Request("/b1s/v1/VIS_DIS_ODRT", Method.POST, jsonData2);
+                        ResponseData response = await serviceLayer.Request("/b1s/v1/VIS_DIS_ODRT", Method.POST, jsonData2, sl.token);
                     }
                 }
                 connection.Close();
@@ -106,6 +109,7 @@ namespace WebApiNetCore.DAL
                 {
                     connection.Close();
                 }
+                user.LogoutServiceLayer().GetAwaiter().GetResult();
             }
             return rs;
         }
@@ -149,37 +153,49 @@ namespace WebApiNetCore.DAL
 
         public async Task<ResponseData> insert(string jsonPayload)
         {
-            ResponseData response = await serviceLayer.Request("/b1s/v1/VIS_DIS_CHLI", Method.POST, jsonPayload);
-
-            if (response.StatusCode == HttpStatusCode.Created)
-            {
-                dynamic responseBody = await response.Data.Content.ReadAsStringAsync();
-                // Parsear el JSON
-                JObject obj = JObject.Parse(responseBody);
-
-                // Leer el valor de DocEntry
-                int DocNum = (int)obj["DocNum"];
-
-                // responseBody = JsonConvert.DeserializeObject(responseBody.ToString());  /* await new Task(async () => await*/ SolicitudDevolucion(deliveryNote, returnReasonText, sl.token)/*)*/;
-
-                // Lanza InicioRutaSMS de manera asíncrona sin bloquear
-                Task.Run(() => InicioRutaSMS(DocNum));
-                response.Data ="Se creo la Inspeccion de Vehculo Nº "+DocNum;
-                response.StatusCode = HttpStatusCode.OK;
-            }
-            else
+            LoginSL sl = user.loginServiceLayer().GetAwaiter().GetResult();
+            ResponseData response = await serviceLayer.Request("/b1s/v1/VIS_DIS_CHLI", Method.POST, jsonPayload, sl.token);
+            try
             {
 
-                ResponseError error = null;
-
-                if (response.Data != null)
+                if (response.StatusCode == HttpStatusCode.Created)
                 {
-                    var responseBody = await response.Data.Content.ReadAsStringAsync();
-                    error = System.Text.Json.JsonSerializer.Deserialize<ResponseError>(responseBody);
-                }
+                    dynamic responseBody = await response.Data.Content.ReadAsStringAsync();
+                    // Parsear el JSON
+                    JObject obj = JObject.Parse(responseBody);
 
-                response.StatusCode = HttpStatusCode.FailedDependency;
-                response.Data = error;
+                    // Leer el valor de DocEntry
+                    int DocNum = (int)obj["DocNum"];
+
+                    // responseBody = JsonConvert.DeserializeObject(responseBody.ToString());  /* await new Task(async () => await*/ SolicitudDevolucion(deliveryNote, returnReasonText, sl.token)/*)*/;
+
+                    // Lanza InicioRutaSMS de manera asíncrona sin bloquear
+                    Task.Run(() => InicioRutaSMS(DocNum));
+                    response.Data = "Se creo la Inspeccion de Vehculo Nº " + DocNum;
+                    response.StatusCode = HttpStatusCode.OK;
+                }
+                else
+                {
+
+                    ResponseError error = null;
+
+                    if (response.Data != null)
+                    {
+                        var responseBody = await response.Data.Content.ReadAsStringAsync();
+                        error = System.Text.Json.JsonSerializer.Deserialize<ResponseError>(responseBody);
+                    }
+
+                    response.StatusCode = HttpStatusCode.FailedDependency;
+                    response.Data = error;
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+            }
+            finally
+            {
+                user.LogoutServiceLayer().GetAwaiter().GetResult();
             }
 
             return response;

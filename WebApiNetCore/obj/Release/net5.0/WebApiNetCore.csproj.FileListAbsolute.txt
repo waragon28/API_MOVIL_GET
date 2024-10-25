@@ -424,3 +424,4 @@ C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\bin\Release\net5.0\System.C
 C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\bin\Release\net5.0\System.IdentityModel.Tokens.Jwt.dll
 C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\bin\Release\net5.0\System.Memory.Data.dll
 C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\obj\Release\net5.0\refint\WebApiNetCore.dll
+C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\bin\Release\net5.0\WebApiNetCore.StaticWebAssets.xml

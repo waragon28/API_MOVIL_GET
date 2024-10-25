@@ -33,6 +33,7 @@ using Azure.Core;
 using System.IdentityModel.Tokens.Jwt;
 using ZXing.Aztec.Internal;
 using WebApiNetCore.DAL;
+using Microsoft.Graph.Models;
 
 
 //using System.Configuration;
@@ -44,6 +45,7 @@ namespace SAP_Core.DAL
     {
         private ServiceLayer serviceLayer;
         CorreoAlert correoAlert = new CorreoAlert();
+        UsuarioDAL user = new UsuarioDAL();
 
         public ApprovalDAL(IMemoryCache _memoryCache)
         {
@@ -708,129 +710,6 @@ namespace SAP_Core.DAL
             return lstAnexo;
         }
 
-        /*
-        public static async Task DownloadFileFromOneDriveAsync(string tenantId, string clientId, string clientSecret, string accessToken, string filePathOnOneDrive, string localFilePath)
-        {
-
-            var app = ConfidentialClientApplicationBuilder.Create(clientId)
-                .WithClientSecret(clientSecret)
-                .WithAuthority(new Uri($"https://login.microsoftonline.com/{tenantId}"))
-                .Build();
-
-            var scopes = new string[] { "https://graph.microsoft.com/.default" };
-
-            AuthenticationResult result = await app.AcquireTokenForClient(scopes).ExecuteAsync();
-
-            accessToken = result.AccessToken;
-
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-                // Reemplaza '/me' con 'users/{userId}' si conoces el ID del usuario propietario del archivo
-                string userId = "f9faf62a-a2b3-40a1-90f7-e732063841fb"; //"user-id";  // Reemplaza esto con el ID real del usuario
-                string downloadUrl = $"https://graph.microsoft.com/v1.0/users/{userId}/drive/root:/{filePathOnOneDrive}:/content";
-
-                HttpResponseMessage response = await httpClient.GetAsync(downloadUrl);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
-                    await File.WriteAllBytesAsync(localFilePath, fileBytes);
-                    Console.WriteLine($"Archivo descargado correctamente en: {localFilePath}");
-                }
-                else
-                {
-                    string content = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine($"Error al descargar el archivo. Código de estado: {response.StatusCode}, Detalles: {content}");
-                }
-            }
-        }
-
-        public static async Task<string> GetAccessTokenWithClientCredentialsAsync(string tenantId, string clientId, string clientSecret,string filePathOnOneDrive,string localFilePath)
-        {
-            var app = ConfidentialClientApplicationBuilder.Create(clientId)
-                 .WithClientSecret(clientSecret)
-                 .WithAuthority(new Uri($"https://login.microsoftonline.com/{tenantId}"))
-                 .Build();
-
-            var scopes = new string[] { "https://graph.microsoft.com/.default" }; // Asegúrate de que estos permisos estén configurados en Azure AD
-
-            AuthenticationResult result = await app.AcquireTokenForClient(scopes).ExecuteAsync();
-
-          //  return result.AccessToken;
-
-           string accessToken = result.AccessToken;
-
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-                // Reemplaza '/me' con 'users/{userId}' si conoces el ID del usuario propietario del archivo
-                string userId = "f9faf62a-a2b3-40a1-90f7-e732063841fb"; //"user-id";  // Reemplaza esto con el ID real del usuario
-                string downloadUrl = $"https://graph.microsoft.com/v1.0/users/{userId}";///drive/root:/{filePathOnOneDrive}:/content";
-
-                HttpResponseMessage response = await httpClient.GetAsync(downloadUrl);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
-                    await File.WriteAllBytesAsync(localFilePath, fileBytes);
-                    Console.WriteLine($"Archivo descargado correctamente en: {localFilePath}");
-                }
-                else
-                {
-                    string content = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine($"Error al descargar el archivo. Código de estado: {response.StatusCode}, Detalles: {content}");
-                }
-            }
-
-            return accessToken;
-        }
-
-
-        public async Task GetTokenAsync(string tenant, string clientId, string clientSecret, string username, string password)
-        {
-            HttpResponseMessage resp;
-            using (var httpClient = new HttpClient())
-            {
-                // Configura el cliente HTTP para aceptar el tipo de contenido application/x-www-form-urlencoded
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
-
-                // Crea el mensaje de solicitud para obtener el token
-                var req = new HttpRequestMessage(HttpMethod.Post, $"https://login.microsoftonline.com/{tenant}/oauth2/token/");
-
-                // Establece el contenido de la solicitud con los parámetros necesarios para el flujo de credenciales de contraseña
-                req.Content = new FormUrlEncodedContent(new Dictionary<string, string>
-                {
-                    {"grant_type", "password"},
-                    {"client_id", clientId},
-                    {"client_secret", clientSecret},
-                    {"resource", "https://graph.microsoft.com"},
-                    {"username", username},
-                    {"password", password}
-                });
-
-                // Envía la solicitud y espera la respuesta
-                resp = await httpClient.SendAsync(req);
-
-                // Lee el contenido de la respuesta como una cadena
-                string content = await resp.Content.ReadAsStringAsync();
-
-                // Deserializa el contenido JSON para obtener el token de acceso
-                var jsonObj = JsonConvert.DeserializeObject<dynamic>(content);
-
-                // Accede a la propiedad "access_token" del objeto JSON
-                string token = jsonObj["access_token"];
-
-              
-
-                // Imprime el token en la consola (puedes reemplazar esto con cualquier otra acción que necesites)
-                Console.WriteLine(token);
-            }
-        }
-
-        */
 
         public List<PriceHistoy> Get_PriceHistory(string ItemCode)
         {
@@ -957,6 +836,8 @@ namespace SAP_Core.DAL
                     {
                         connection.Close();
                     }
+
+
                 }
 
 
@@ -1020,6 +901,7 @@ namespace SAP_Core.DAL
                     {
                         connection.Close();
                     }
+
                 }
             }
 

@@ -10,6 +10,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using WebApiNetCore;
 using Newtonsoft.Json.Linq;
+using SAP_Core.DAL;
 
 namespace SalesForce.Util
 {   
@@ -17,6 +18,8 @@ namespace SalesForce.Util
     {
         private static readonly string UriServiceLayer = Startup.Configuration.GetValue<string>("ServiceLayer:PathUri");
         private static readonly double MinuteCacheServer = Startup.Configuration.GetValue<double>("ServiceLayer:MinuteCacheServer");
+
+         static  UsuarioDAL user = new UsuarioDAL();
 
         public static ResponseLogin Login(int countLogin, IMemoryCache _memoryCache,Acceso acceso,ref string SessionId)
         {
@@ -56,36 +59,20 @@ namespace SalesForce.Util
 
                 HttpClient cliente = new(clientHandler);
                 StringContent content = new(JsonSerializer.Serialize(acceso), Encoding.UTF8, "application/json");
-#if VISTONY
-
-                //var respuesta = await cliente.PostAsync("http://192.168.254.26:8090/auth/login", content);
-                var respuesta = await cliente.PostAsync("https://ecs-dbs-vistony:50000/b1s/v1/Login", content);
-#else
 
                 var respuesta = await cliente.PostAsync("https://ecs-dbs-vistony:50000/b1s/v1/Login", content);
-#endif
+
                 var responseBody = await respuesta.Content.ReadAsStringAsync();
 
                 ResponseLoginV2 obj = new ResponseLoginV2();
                 // Parsear el JSON
                 JObject jsonObject = JObject.Parse(responseBody);
 
-#if VISTONY
-                //PERFILES
-               
-                        // Leer el valor de SessionId;
-                obj.SessionId = jsonObject["SessionId"]?.ToString();
-                obj.Version = "1.1";
-                obj.SessionTimeout = 30;
-#else
-
                  // Leer el valor de SessionId;
                 obj.SessionId= jsonObject["SessionId"]?.ToString();
                 obj.odata= jsonObject["odata.metadata"]?.ToString();
                 obj.Version= jsonObject["Version"]?.ToString();
                 obj.SessionTimeout= 30;
-#endif
-
 
                 return obj;
             }
@@ -105,35 +92,20 @@ namespace SalesForce.Util
 
                 HttpClient cliente = new(clientHandler);
                 StringContent content = new(JsonSerializer.Serialize(acceso), Encoding.UTF8, "application/json");
-#if VISTONY
-
-                var respuesta = await cliente.PostAsync("http://192.168.254.26:8090/auth/login", content);
-               // var respuesta = await cliente.PostAsync("https://ecs-dbs-vistony:50000/b1s/v1/Login", content);
-#else
 
                 var respuesta = await cliente.PostAsync("https://ecs-dbs-vistony:50000/b1s/v1/Login", content);
-#endif
+
                 var responseBody = await respuesta.Content.ReadAsStringAsync();
                 
                 ResponseLogin obj = new ResponseLogin();
                 // Parsear el JSON
                 JObject jsonObject = JObject.Parse(responseBody);
 
-#if VISTONY
-                // Leer el valor de SessionId;
-                obj.SessionId = jsonObject["token"]?.ToString();
-                obj.odata = "";
-                obj.StatusCode=200;
-                obj.Version="1.01";
-                obj.SessionTimeout = 30;
-#else
-
                  // Leer el valor de SessionId;
                 obj.SessionId= jsonObject["SessionId"]?.ToString();
                 obj.odata= jsonObject["odata.metadata"]?.ToString();
                 obj.Version= jsonObject["Version"]?.ToString();
                 obj.SessionTimeout= 30;
-#endif
 
 
                 return obj;
@@ -141,6 +113,10 @@ namespace SalesForce.Util
             catch (Exception ex)
             {
                 return new ResponseLogin() { Response = ex.Message, StatusCode = 500 };
+            }
+            finally
+            {
+                user.LogoutServiceLayer().GetAwaiter().GetResult();
             }
         }
 

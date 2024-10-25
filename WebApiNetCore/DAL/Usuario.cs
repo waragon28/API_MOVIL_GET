@@ -161,7 +161,15 @@ namespace SAP_Core.DAL
         public List<ConfigUser> getConfig(string imei, string empID)
         {
             HanaDataReader reader;
+
             HanaConnection connection= GetConnection();
+
+
+            if (connection.State == ConnectionState.Open)
+            {
+                connection.Close();
+            }
+
             List<ConfigUser> listUsuario = new List<ConfigUser>();
             
             ConfigUser usuario = new ConfigUser();
@@ -287,12 +295,9 @@ namespace SAP_Core.DAL
         {
             try
             {
-#if VISTONY
-                 string url = Startup.Configuration.GetValue<string>("SLAuth");
 
-#else
                 string url = Startup.Configuration.GetValue<string>("ServiceLayer:PathUri")+"/b1s/v1/Login";//get
-#endif
+
                 Acceso acceso = new()
                 {
                     CompanyDB = Startup.Configuration.GetValue<string>("SL:PE:CompanyDB"),
@@ -308,12 +313,6 @@ namespace SAP_Core.DAL
                 StringContent content = new(JsonSerializer.Serialize(acceso), Encoding.UTF8, "application/json");
 
                 var respuesta = await cliente.PostAsync(url, content);
-
-#if VISTONY
-                var responseBody = await respuesta.Content.ReadAsStringAsync();
-
-                LoginSL r = JsonSerializer.Deserialize<LoginSL>(responseBody);
-#else
 
                 var responseBody = await respuesta.Content.ReadAsStringAsync();
                 // Parsear el JSON a un JObject
@@ -331,9 +330,6 @@ namespace SAP_Core.DAL
 
 
                 LoginSL r = loginSL;
-
-#endif
-
 
 
 

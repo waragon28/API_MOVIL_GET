@@ -220,5 +220,13 @@ namespace SAP_Core.BO
         public List<ApprovalBo> Data { get; set; }
     }
 
+    public class ListStatusAprobadores
+    {
+        public string Aprobador { get; set; }
+        public string Estado { get; set; }
+        public string Comentario { get; set; }
+        
+    }
+
 
 }

@@ -330,7 +330,6 @@ C:\Users\waragon\Desktop\API_Mobil_Get\MSTestSalesForece\bin\Debug\net5.0\WebApi
 C:\Users\waragon\Desktop\API_Mobil_Get\MSTestSalesForece\bin\Debug\net5.0\WebApiNetCore.runtimeconfig.json
 C:\Users\waragon\Desktop\API_Mobil_Get\MSTestSalesForece\bin\Debug\net5.0\WebApiNetCore.runtimeconfig.dev.json
 C:\Users\waragon\Desktop\API_Mobil_Get\MSTestSalesForece\bin\Debug\net5.0\appsettings.json
-C:\Users\waragon\Desktop\API_Mobil_Get\MSTestSalesForece\bin\Debug\net5.0\WebApiNetCore.StaticWebAssets.xml
 C:\Users\waragon\Desktop\API_Mobil_Get\MSTestSalesForece\bin\Debug\net5.0\WebApiNetCore.exe
 C:\Users\waragon\Desktop\API_Mobil_Get\MSTestSalesForece\bin\Debug\net5.0\Microsoft.TestPlatform.PlatformAbstractions.dll
 C:\Users\waragon\Desktop\API_Mobil_Get\MSTestSalesForece\bin\Debug\net5.0\MSTestSalesForece.deps.json
@@ -485,7 +484,7 @@ C:\Users\waragon\Desktop\API_Mobil_Get\MSTestSalesForece\obj\Debug\net5.0\MSTest
 C:\Users\waragon\Desktop\API_Mobil_Get\MSTestSalesForece\obj\Debug\net5.0\MSTestSalesForece.csproj.CoreCompileInputs.cache
 C:\Users\waragon\Desktop\API_Mobil_Get\MSTestSalesForece\obj\Debug\net5.0\MSTestSalesForece.csproj.CopyComplete
 C:\Users\waragon\Desktop\API_Mobil_Get\MSTestSalesForece\obj\Debug\net5.0\MSTestSalesForece.dll
-C:\Users\waragon\Desktop\API_Mobil_Get\MSTestSalesForece\obj\Debug\net5.0\refint\MSTestSalesForece.dll
 C:\Users\waragon\Desktop\API_Mobil_Get\MSTestSalesForece\obj\Debug\net5.0\MSTestSalesForece.pdb
 C:\Users\waragon\Desktop\API_Mobil_Get\MSTestSalesForece\obj\Debug\net5.0\MSTestSalesForece.genruntimeconfig.cache
 C:\Users\waragon\Desktop\API_Mobil_Get\MSTestSalesForece\obj\Debug\net5.0\ref\MSTestSalesForece.dll
+C:\Users\waragon\Desktop\API_Mobil_Get\MSTestSalesForece\bin\Debug\net5.0\ref\MSTestSalesForece.dll

@@ -494,10 +494,8 @@ namespace SAP_Core.DAL
                     EmailAddress = address.email,
                     Cellular = address.mobilephone,
                     Phone1 = address.phone,
-#if VISTONY
                     U_SYP_CATCLI = address.lineofbusinessCode,
                     U_EconomyActivity = address.activityeconomiccode
-#endif
                 };
 
 

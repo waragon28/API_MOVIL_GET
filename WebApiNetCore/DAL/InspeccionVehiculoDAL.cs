@@ -29,6 +29,7 @@ namespace WebApiNetCore.DAL
         private ServiceLayer serviceLayer;
         private bool disposedValue;
         UsuarioDAL user = new UsuarioDAL();
+        CorreoAlert correoAlert = new CorreoAlert();
 
         public InspeccionVehiculoDAL(IMemoryCache _memoryCache)
         {
@@ -40,21 +41,19 @@ namespace WebApiNetCore.DAL
         {
             ResponseData rs = new ResponseData();
             HanaDataReader reader;
+            HanaDataReader reader2;
             HanaConnection connection = GetConnection();
             string fechaActual = DateTime.Now.ToString("yyyyMMdd");
             string strSQL = string.Format("CALL {0}.APP_NRO_CLIENTE ('{1}','{2}')", DataSource.bd(), DocNum, fechaActual);
 
-            LoginSL sl = user.loginServiceLayer().GetAwaiter().GetResult();
+            //LoginSL sl = user.loginServiceLayer().GetAwaiter().GetResult();
             try
             {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-                connection.Open();
                 HanaCommand command = new HanaCommand(strSQL, connection);
-
+              
                 reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+                connection.Open();
+
 
                 // La URL de tu API
                 string url = "http://192.168.254.20:88/vs1.0/sms";
@@ -65,9 +64,19 @@ namespace WebApiNetCore.DAL
                 {
                     while (reader.Read())
                     {
+
+                        HanaCommand command2 = new HanaCommand(strSQL, connection);
+
+                        strSQL = string.Format("UPDATE \"@VIS_DIS_ODRT\" SET \"U_SendSMS\"='Y' Where \"DocEntry\" = '{1}'", DataSource.bd(), reader["DocEntry"].ToString());
+                        command2 = new HanaCommand(strSQL, connection);
+
+                        reader2 = command2.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+
+
+
                         string Mensaje = string.Format("VISTONY : Hola {0} " + ".." +
                                     "Nos complace informarle que su pedido {1} se encuentra en ruta hacia su destino. " + ".." +
-                                    "Queremos garantizar que su compra llegue a usted en perfectas condiciones y en el tiempo estipulado. ",
+                                    "Queremos garantizar que su compra llegue a usted en perfectas condiciones y en el tiempo estipulado. .. Gracias.",
                                                 reader["CardName"].ToString()
                                     , reader["U_NumAtCard"].ToString()); // NUMERO DE FACTURA F00X-XXXXXXXX
                         var cabeceraMensaje = cabecera_mensaje(Mensaje, "51"+ reader["Phone1"].ToString());
@@ -78,11 +87,8 @@ namespace WebApiNetCore.DAL
                         // Llama al método que envía la solicitud POST
                         var result = await PostRequestAsync(url, jsonData);
 
-                        string time = DateTime.Now.ToString("hhmm");
-                        StartRoute objStartRoute = startRoute("Y", Convert.ToInt32(time));
-                        string jsonData2 = JsonConvert.SerializeObject(objStartRoute);
-                        ResponseData response = await serviceLayer.Request("/b1s/v1/VIS_DIS_ODRT", Method.POST, jsonData2, sl.token);
-                    }
+
+                       }
                 }
                 connection.Close();
             }
@@ -92,16 +98,13 @@ namespace WebApiNetCore.DAL
                 {
                     connection.Close();
                 }
-                if (connection.State != ConnectionState.Open)
-                {
-                    connection.Open();
-                }
-
                 strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "InicioRutaSMS - " + ex.Message + " - ");
                 HanaCommand command = new HanaCommand(strSQL, connection);
 
                 reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
                 connection.Close();
+
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Inspeccion VehiculoVistony", ex.Message.ToString());
             }
             finally
             {
@@ -112,13 +115,6 @@ namespace WebApiNetCore.DAL
                 user.LogoutServiceLayer().GetAwaiter().GetResult();
             }
             return rs;
-        }
-        public StartRoute startRoute(string Value, int Hora)
-        {
-            StartRoute startRoute = new StartRoute();
-            startRoute.U_SendSMS = Value;
-            startRoute.U_StartTime = Hora;
-            return startRoute;
         }
         private static readonly HttpClient client = new HttpClient();
         public Cabecera_Mensaje cabecera_mensaje(string Mensaje, string Numero)

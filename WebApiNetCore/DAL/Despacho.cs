@@ -497,6 +497,7 @@ namespace SAP_Core.DAL
                         ObjSolicitudDevolucion.U_SYP_MDTD = "";
                         ObjSolicitudDevolucion.U_SYP_MDSD = "";
                         ObjSolicitudDevolucion.U_SYP_MDCD = "";
+                        ObjSolicitudDevolucion.U_SYP_FECHAREF = reader["FechaRef"].ToString();//AGREGADO
                         ObjSolicitudDevolucion.U_SYP_STATUS = reader["U_SYP_STATUS"].ToString();
                         ObjSolicitudDevolucion.U_SYP_DETPAGADO = reader["U_SYP_DETPAGADO"].ToString();
                         ObjSolicitudDevolucion.U_SYP_AUTODET = reader["U_SYP_AUTODET"].ToString();
@@ -868,7 +869,8 @@ namespace SAP_Core.DAL
 
                                 //MANTENER COMENTADO HASTA QUE SALGA A PRODUCCION LA GENERACION DE SOLICITUD DE DEVOLUCION AUTOMATICA
                              //   await new Task(async () => await 
-                              await SolicitudDevolucion(deliveryNote, returnReasonText, sl.token);
+                                      await SolicitudDevolucion(deliveryNote, returnReasonText, sl.token);
+                                     //COMENTADO POR CIERRE 
                              //QA
                             }
                             

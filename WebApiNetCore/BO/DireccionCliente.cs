@@ -71,11 +71,10 @@ namespace SAP_Core.BO
         public string verificationcode { get; set; }
 
         //public string categorycode { get; set; }
-#if VISTONY
         public string lineofbusinessCode { get; set; }
         public string activityeconomiccode { get; set; }
 
-#endif
+
 
 
     }
@@ -109,10 +108,9 @@ namespace SAP_Core.BO
         public string Phone1 { get; set; }
         public string Cellular { get; set; }
         //public string U_VIS_SaleCategory { get; set; }
-#if VISTONY
         public string U_SYP_CATCLI { get; set; }
         public string U_EconomyActivity { get; set; }
-#endif 
+
 
     }
 

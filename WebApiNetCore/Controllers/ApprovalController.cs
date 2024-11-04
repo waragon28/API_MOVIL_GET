@@ -163,6 +163,18 @@ namespace WebApiNetCore.Controllers
             
         }
 
+        [HttpGet("ListadoAprobadores")]
+
+        public IActionResult ListadoAprobadores([FromQuery] string docEntry)
+        {
+
+            ApprovalDAL approvalDAL = new(_memoryCache);
+
+            ResponseData response = approvalDAL.ListadoAprobadores(docEntry);
+
+            return Ok(response);
+        }
+
         [HttpPost("Documentos")]
         public IActionResult PostDocumentos(Filtro filtro)
         {

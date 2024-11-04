@@ -17,12 +17,14 @@ using static WebApiNetCore.Utils.Other;
 using System.Net;
 using Newtonsoft.Json;
 using WebApiNetCore.BO;
+using System.Runtime.ConstrainedExecution;
 
 namespace SAP_Core.DAL
 {
     public class CobranzaDDAL : Connection,IDisposable
     {
         private ServiceLayer serviceLayer;
+        UsuarioDAL user = new UsuarioDAL();
         public CobranzaDDAL(IMemoryCache _memoryCache)
         {
             serviceLayer = new(_memoryCache);
@@ -73,31 +75,46 @@ namespace SAP_Core.DAL
         }
         public async Task<ResponseData> insert(string jsonPayload)
         {
-            ResponseData response = await serviceLayer.Request("/b1s/v1/VIST_COBRANZA", Method.POST, jsonPayload);
 
-            if (response.StatusCode == HttpStatusCode.Created)
+            LoginSL sl = user.loginServiceLayer().GetAwaiter().GetResult();
+            ResponseData response = await serviceLayer.Request("/b1s/v1/VIST_COBRANZA", Method.POST, jsonPayload, sl.token);
+
+            try
             {
-                dynamic responseBody = await response.Data.Content.ReadAsStringAsync();
-
-                responseBody = JsonConvert.DeserializeObject(responseBody.ToString());
-
-                response.Data = responseBody["Code"];
-                response.StatusCode = HttpStatusCode.OK;
-            }
-            else
-            {
-
-                ResponseError error = null;
-
-                if (response.Data != null)
+                if (response.StatusCode == HttpStatusCode.Created)
                 {
-                    var responseBody = await response.Data.Content.ReadAsStringAsync();
-                    error = System.Text.Json.JsonSerializer.Deserialize<ResponseError>(responseBody);
-                }
+                    dynamic responseBody = await response.Data.Content.ReadAsStringAsync();
 
-                response.StatusCode = HttpStatusCode.FailedDependency;
-                response.Data = error;
+                    responseBody = JsonConvert.DeserializeObject(responseBody.ToString());
+
+                    response.Data = responseBody["Code"];
+                    response.StatusCode = HttpStatusCode.OK;
+                }
+                else
+                {
+
+                    ResponseError error = null;
+
+                    if (response.Data != null)
+                    {
+                        var responseBody = await response.Data.Content.ReadAsStringAsync();
+                        error = System.Text.Json.JsonSerializer.Deserialize<ResponseError>(responseBody);
+                    }
+
+                    response.StatusCode = HttpStatusCode.FailedDependency;
+                    response.Data = error;
+                }
             }
+            catch (Exception)
+            {
+
+                throw;
+            }finally
+            {
+                user.LogoutServiceLayer().GetAwaiter().GetResult();
+            }
+
+           
 
             return response;
         }

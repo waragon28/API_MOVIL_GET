@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using SalesForce.BO;
 using SalesForce.Util;
 using Sap.Data.Hana;
+using SAP_Core.BO;
 using SAP_Core.DAL;
 using SAP_Core.Utils;
 using System;
@@ -22,6 +23,7 @@ namespace WebApiNetCore.DAL
     public class FormsDAL : Connection, IDisposable
     {
         private ServiceLayer serviceLayer;
+        UsuarioDAL user = new UsuarioDAL();
         public FormsDAL(IMemoryCache _memoryCache)
         {
             serviceLayer = new(_memoryCache);
@@ -160,6 +162,9 @@ namespace WebApiNetCore.DAL
         {
             HanaDataReader reader;
             HanaConnection connection = GetConnection();
+
+            LoginSL sl = user.loginServiceLayer().GetAwaiter().GetResult();
+
             FormSAP form = new FormSAP();
             List<exitTypeSAP> let = new List<exitTypeSAP>();
             List<cuestionarioSAP> lcs = new List<cuestionarioSAP>();
@@ -236,7 +241,7 @@ namespace WebApiNetCore.DAL
                 }
                 form.VIS_APP_FSGACollection = lgc;
                 string json = JsonConvert.SerializeObject(form);
-                response = await serviceLayer.Request("/b1s/v1/VIS_APP_FSCA", Method.POST, json);
+                response = await serviceLayer.Request("/b1s/v1/VIS_APP_FSCA", Method.POST, json,sl.token);
                 if (response.StatusCode == HttpStatusCode.Created)
                 {
                     frs.code = form.Code;
@@ -282,6 +287,7 @@ namespace WebApiNetCore.DAL
                 {
                     connection.Close();
                 }
+                user.LogoutServiceLayer().GetAwaiter().GetResult();
             }
             return response;
         }

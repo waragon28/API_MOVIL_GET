@@ -32,6 +32,8 @@ using Newtonsoft.Json;
 using Azure.Core;
 using System.IdentityModel.Tokens.Jwt;
 using ZXing.Aztec.Internal;
+using WebApiNetCore.DAL;
+using Microsoft.Graph.Models;
 
 
 //using System.Configuration;
@@ -42,66 +44,14 @@ namespace SAP_Core.DAL
    public  class ApprovalDAL : Connection,IDisposable 
     {
         private ServiceLayer serviceLayer;
+        CorreoAlert correoAlert = new CorreoAlert();
+        UsuarioDAL user = new UsuarioDAL();
+
         public ApprovalDAL(IMemoryCache _memoryCache)
         {
             serviceLayer = new(_memoryCache);
         }
-        public string UpdateB2B(List<ListUpdateB2B_Approval> listUpdateB2B_Approval)
-        {
-            HanaDataReader reader;
-            HanaConnection connection = GetConnection();
-            List<ListUpdateB2B_Approval> ObjlistUpdateB2B_Approval = new List<ListUpdateB2B_Approval>();
-            string Result = string.Empty;
 
-            try
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-                // Iterar sobre cada elemento del arreglo
-                foreach (var item in listUpdateB2B_Approval)
-                {
-
-                }
-
-                    connection.Open();
-                HanaCommand command = new HanaCommand("", connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-
-
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                            
-                    }
-                }
-
-                connection.Close();
-            }
-            catch (Exception ex)
-            {
-
-                if (connection.State != ConnectionState.Open)
-                {
-                    connection.Open();
-                }
-
-                Result = ex.Message.ToString();
-
-                connection.Close();
-            }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-            }
-            return Result;
-        }
         public ListApprovalBo Get_Documents (string user,string status)
         {
             HanaDataReader reader;
@@ -150,6 +100,8 @@ namespace SAP_Core.DAL
             }
             catch (Exception ex)
             {
+
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_Documents DAL Vistony", ex.Message.ToString());
 
                 if (connection.State != ConnectionState.Open)
                 {
@@ -223,6 +175,7 @@ namespace SAP_Core.DAL
             catch (Exception ex)
             {
 
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Documentos DAL Vistony", ex.Message.ToString());
                 if (connection.State != ConnectionState.Open)
                 {
                     connection.Open();
@@ -292,6 +245,8 @@ namespace SAP_Core.DAL
             }
             catch (Exception ex)
             {
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_Deuda DAL Vistony", ex.Message.ToString());
+
                 if (connection.State != ConnectionState.Open)
                 {
                     connection.Open();
@@ -312,6 +267,7 @@ namespace SAP_Core.DAL
             }
             return new ListDeudaBo() { Data= listUsuario };
         }
+
         public ListLineaBo Get_Linea(string cardCode)
         {
             HanaDataReader reader;
@@ -362,6 +318,8 @@ namespace SAP_Core.DAL
             catch (Exception ex)
             {
 
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_Linea DAL Vistony", ex.Message.ToString());
+
                 if (connection.State != ConnectionState.Open)
                 {
                     connection.Open();
@@ -383,6 +341,7 @@ namespace SAP_Core.DAL
             }
             return new ListLineaBo() { Data = listUsuario };
         }
+
         public ListClienteBo Get_Cliente(string cardCode,string user)
         {
             HanaDataReader reader;
@@ -436,6 +395,8 @@ namespace SAP_Core.DAL
             }
             catch (Exception ex)
             {
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_Cliente DAL Vistony", ex.Message.ToString());
+
                 if (connection.State == ConnectionState.Open)
                 {
                     connection.Close();
@@ -461,6 +422,7 @@ namespace SAP_Core.DAL
             }
             return new ListClienteBo() { Data = listUsuario };
         }
+
         private ListPedidoBo Get_Pedidos(string cardCode,string user)
         {
             HanaDataReader reader;
@@ -508,6 +470,8 @@ namespace SAP_Core.DAL
             }
             catch (Exception ex)
             {
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_Pedidos DAL Vistony", ex.Message.ToString());
+
                 if (connection.State == ConnectionState.Open)
                 {
                     connection.Close();
@@ -532,6 +496,7 @@ namespace SAP_Core.DAL
             }
             return new ListPedidoBo() { Data = listUsuario };
         } 
+
         public ListPedidoDetalleBo Get_PedidosDetalle(string docEntry,string Tipo)
         {
             HanaDataReader reader;
@@ -585,6 +550,7 @@ namespace SAP_Core.DAL
             }
             catch (Exception ex)
             {
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_PedidosDetalle DAL Vistony", ex.Message.ToString());
                 if (connection.State == ConnectionState.Open)
                 {
                     connection.Close();
@@ -609,6 +575,7 @@ namespace SAP_Core.DAL
             }
             return new ListPedidoDetalleBo() { Data = listUsuario };
         }
+
         public ListAprovacionBo Get_Rules(string docEntry,string Tipo)
         {
             HanaDataReader reader;
@@ -652,6 +619,8 @@ namespace SAP_Core.DAL
             }
             catch (Exception ex)
             {
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_Rules DAL Vistony", ex.Message.ToString());
+
                 if (connection.State == ConnectionState.Open)
                 {
                     connection.Close();
@@ -676,8 +645,6 @@ namespace SAP_Core.DAL
             }
             return new ListAprovacionBo() { Data = listUsuario };
         }
-
-
 
         public LstAnexo Get_Anexos(string DocEntry)
         {
@@ -719,6 +686,8 @@ namespace SAP_Core.DAL
             }
             catch (Exception ex)
             {
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_Anexos DAL Vistony", ex.Message.ToString());
+
                 if (connection.State == ConnectionState.Open)
                 {
                     connection.Close();
@@ -743,130 +712,6 @@ namespace SAP_Core.DAL
             }
             return lstAnexo;
         }
-
-        /*
-        public static async Task DownloadFileFromOneDriveAsync(string tenantId, string clientId, string clientSecret, string accessToken, string filePathOnOneDrive, string localFilePath)
-        {
-
-            var app = ConfidentialClientApplicationBuilder.Create(clientId)
-                .WithClientSecret(clientSecret)
-                .WithAuthority(new Uri($"https://login.microsoftonline.com/{tenantId}"))
-                .Build();
-
-            var scopes = new string[] { "https://graph.microsoft.com/.default" };
-
-            AuthenticationResult result = await app.AcquireTokenForClient(scopes).ExecuteAsync();
-
-            accessToken = result.AccessToken;
-
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-                // Reemplaza '/me' con 'users/{userId}' si conoces el ID del usuario propietario del archivo
-                string userId = "f9faf62a-a2b3-40a1-90f7-e732063841fb"; //"user-id";  // Reemplaza esto con el ID real del usuario
-                string downloadUrl = $"https://graph.microsoft.com/v1.0/users/{userId}/drive/root:/{filePathOnOneDrive}:/content";
-
-                HttpResponseMessage response = await httpClient.GetAsync(downloadUrl);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
-                    await File.WriteAllBytesAsync(localFilePath, fileBytes);
-                    Console.WriteLine($"Archivo descargado correctamente en: {localFilePath}");
-                }
-                else
-                {
-                    string content = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine($"Error al descargar el archivo. Código de estado: {response.StatusCode}, Detalles: {content}");
-                }
-            }
-        }
-
-        public static async Task<string> GetAccessTokenWithClientCredentialsAsync(string tenantId, string clientId, string clientSecret,string filePathOnOneDrive,string localFilePath)
-        {
-            var app = ConfidentialClientApplicationBuilder.Create(clientId)
-                 .WithClientSecret(clientSecret)
-                 .WithAuthority(new Uri($"https://login.microsoftonline.com/{tenantId}"))
-                 .Build();
-
-            var scopes = new string[] { "https://graph.microsoft.com/.default" }; // Asegúrate de que estos permisos estén configurados en Azure AD
-
-            AuthenticationResult result = await app.AcquireTokenForClient(scopes).ExecuteAsync();
-
-          //  return result.AccessToken;
-
-           string accessToken = result.AccessToken;
-
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-                // Reemplaza '/me' con 'users/{userId}' si conoces el ID del usuario propietario del archivo
-                string userId = "f9faf62a-a2b3-40a1-90f7-e732063841fb"; //"user-id";  // Reemplaza esto con el ID real del usuario
-                string downloadUrl = $"https://graph.microsoft.com/v1.0/users/{userId}";///drive/root:/{filePathOnOneDrive}:/content";
-
-                HttpResponseMessage response = await httpClient.GetAsync(downloadUrl);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
-                    await File.WriteAllBytesAsync(localFilePath, fileBytes);
-                    Console.WriteLine($"Archivo descargado correctamente en: {localFilePath}");
-                }
-                else
-                {
-                    string content = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine($"Error al descargar el archivo. Código de estado: {response.StatusCode}, Detalles: {content}");
-                }
-            }
-
-            return accessToken;
-        }
-
-
-        public async Task GetTokenAsync(string tenant, string clientId, string clientSecret, string username, string password)
-        {
-            HttpResponseMessage resp;
-            using (var httpClient = new HttpClient())
-            {
-                // Configura el cliente HTTP para aceptar el tipo de contenido application/x-www-form-urlencoded
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
-
-                // Crea el mensaje de solicitud para obtener el token
-                var req = new HttpRequestMessage(HttpMethod.Post, $"https://login.microsoftonline.com/{tenant}/oauth2/token/");
-
-                // Establece el contenido de la solicitud con los parámetros necesarios para el flujo de credenciales de contraseña
-                req.Content = new FormUrlEncodedContent(new Dictionary<string, string>
-                {
-                    {"grant_type", "password"},
-                    {"client_id", clientId},
-                    {"client_secret", clientSecret},
-                    {"resource", "https://graph.microsoft.com"},
-                    {"username", username},
-                    {"password", password}
-                });
-
-                // Envía la solicitud y espera la respuesta
-                resp = await httpClient.SendAsync(req);
-
-                // Lee el contenido de la respuesta como una cadena
-                string content = await resp.Content.ReadAsStringAsync();
-
-                // Deserializa el contenido JSON para obtener el token de acceso
-                var jsonObj = JsonConvert.DeserializeObject<dynamic>(content);
-
-                // Accede a la propiedad "access_token" del objeto JSON
-                string token = jsonObj["access_token"];
-
-              
-
-                // Imprime el token en la consola (puedes reemplazar esto con cualquier otra acción que necesites)
-                Console.WriteLine(token);
-            }
-        }
-
-        */
 
         public List<PriceHistoy> Get_PriceHistory(string ItemCode)
         {
@@ -905,6 +750,8 @@ namespace SAP_Core.DAL
             }
             catch (Exception ex)
             {
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_PriceHistory DAL Vistony", ex.Message.ToString());
+
                 if (connection.State == ConnectionState.Open)
                 {
                     connection.Close();
@@ -967,6 +814,9 @@ namespace SAP_Core.DAL
                 }
                 catch (Exception ex)
                 {
+
+                    correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval decicion DAL Vistony", ex.Message.ToString());
+
                     if (connection.State == ConnectionState.Open)
                     {
                         connection.Close();
@@ -988,6 +838,8 @@ namespace SAP_Core.DAL
                     {
                         connection.Close();
                     }
+
+
                 }
 
 
@@ -1028,6 +880,8 @@ namespace SAP_Core.DAL
                 }
                 catch (Exception ex)
                 {
+                    correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval decicion DAL Vistony 2", ex.Message.ToString());
+
                     if (connection.State == ConnectionState.Open)
                     {
                         connection.Close();
@@ -1049,6 +903,7 @@ namespace SAP_Core.DAL
                     {
                         connection.Close();
                     }
+
                 }
             }
 
@@ -1056,10 +911,70 @@ namespace SAP_Core.DAL
 
         }
 
+
+        public ResponseData ListadoAprobadores(string DocEntry)
+        {
+            ResponseData rs = new ResponseData();
+
+            List<ListStatusAprobadores> LsStatusAprobadores = new List<ListStatusAprobadores>();
+            ListStatusAprobadores ObjStatusAprobadores = new ListStatusAprobadores();
+            HanaDataReader reader;
+            HanaConnection connection = GetConnection();
+            string strSQL = string.Format("CALL {0}.APP_LSAPROBADORES('{1}')", DataSource.bd(), DocEntry);
+
+            try
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+
+                connection.Open();
+                HanaCommand command = new HanaCommand(strSQL, connection);
+
+                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+
+
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        ObjStatusAprobadores = new ListStatusAprobadores();
+                        ObjStatusAprobadores.Aprobador = reader["Aprobado"].ToString();
+                        ObjStatusAprobadores.Estado = reader["Estado"].ToString().ToUpper();
+                        ObjStatusAprobadores.Comentario = reader["Comentario"].ToString().ToUpper();
+
+                        LsStatusAprobadores.Add(ObjStatusAprobadores);
+                    }
+                }
+                rs.StatusCode = HttpStatusCode.Accepted;
+                rs.Data  = LsStatusAprobadores;
+
+                connection.Close();
+            }
+            catch (Exception ex)
+            {
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval ListadoAprobadores DAL Vistony", ex.Message.ToString());
+                rs.StatusCode = HttpStatusCode.BadRequest;
+                rs.Data = ex.Message.ToString();
+
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+            }
+
+
+            return rs;
+        }
+
+
+
+
         #region Disposable
-
-
-
 
         private bool disposing = false;
         /// <summary>

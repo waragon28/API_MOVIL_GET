@@ -11,7 +11,7 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyMetadata("Sentry.ProjectDirectory", "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\WebApiNetCore\\")]
+[assembly: System.Reflection.AssemblyMetadata("Sentry.ProjectDirectory", "C:\\Users\\waragon\\Desktop\\API_Mobil_Get\\WebApiNetCore\\")]
 
 // Generado por la clase WriteCodeFragment de MSBuild.
 

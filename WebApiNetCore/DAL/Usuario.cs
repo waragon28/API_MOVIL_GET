@@ -1,4 +1,4 @@
-﻿#define VISTONY
+﻿//#define VISTONY
 
 using System;
 using System.Collections.Generic;
@@ -161,7 +161,15 @@ namespace SAP_Core.DAL
         public List<ConfigUser> getConfig(string imei, string empID)
         {
             HanaDataReader reader;
+
             HanaConnection connection= GetConnection();
+
+
+            if (connection.State == ConnectionState.Open)
+            {
+                connection.Close();
+            }
+
             List<ConfigUser> listUsuario = new List<ConfigUser>();
             
             ConfigUser usuario = new ConfigUser();
@@ -287,12 +295,9 @@ namespace SAP_Core.DAL
         {
             try
             {
-#if VISTONY
-                 string url = Startup.Configuration.GetValue<string>("SLAuth"); //getS
-               // string url = "https://ecs-dbs-vistony:50000/b1s/v1/Login"; //get.qa
-#else
-                string url = "https://ecs-dbs-vistony:50000/b1s/v1/Login"; //get
-#endif
+
+                string url = Startup.Configuration.GetValue<string>("ServiceLayer:PathUri")+"/b1s/v1/Login";//get
+
                 Acceso acceso = new()
                 {
                     CompanyDB = Startup.Configuration.GetValue<string>("SL:PE:CompanyDB"),
@@ -308,12 +313,6 @@ namespace SAP_Core.DAL
                 StringContent content = new(JsonSerializer.Serialize(acceso), Encoding.UTF8, "application/json");
 
                 var respuesta = await cliente.PostAsync(url, content);
-
-#if VISTONY
-                var responseBody = await respuesta.Content.ReadAsStringAsync();
-
-                LoginSL r = JsonSerializer.Deserialize<LoginSL>(responseBody);
-#else
 
                 var responseBody = await respuesta.Content.ReadAsStringAsync();
                 // Parsear el JSON a un JObject
@@ -332,9 +331,6 @@ namespace SAP_Core.DAL
 
                 LoginSL r = loginSL;
 
-#endif
-
-
 
 
                 return r;
@@ -343,8 +339,40 @@ namespace SAP_Core.DAL
             {
                 throw;
             }
+            finally
+            {
+
+            }
         }
-#region Disposable
+
+        public async Task LogoutServiceLayer()
+        {
+            try
+            {
+                string url = Startup.Configuration.GetValue<string>("SL:Logout");
+;
+                HttpClientHandler clientHandler = new()
+                {
+                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; }
+                };
+
+                HttpClient cliente = new(clientHandler);
+                StringContent content = new("", Encoding.UTF8, "application/json");
+
+                var respuesta = await cliente.PostAsync(url, content);
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+
+            }
+        }
+
+        #region Disposable
 
 
 

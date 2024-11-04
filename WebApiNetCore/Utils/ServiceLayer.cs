@@ -14,7 +14,7 @@ using System.Linq;
 using System.Net.Http.Headers;
 using static WebApiNetCore.Utils.Other;
 using Sentry;
-
+using SAP_Core.DAL;
 
 namespace SalesForce.Util
 {
@@ -23,6 +23,8 @@ namespace SalesForce.Util
         private IMemoryCache memoryCache;
         private static readonly string UriServiceLayer = Startup.Configuration.GetValue<string>("ServiceLayer:PathUri");
         private static readonly double MinuteCacheServer = Startup.Configuration.GetValue<double>("ServiceLayer:MinuteCacheServer");
+
+        UsuarioDAL user = new UsuarioDAL();
 
         public ServiceLayer(IMemoryCache _memoryCache)
         {
@@ -47,20 +49,20 @@ namespace SalesForce.Util
 
                 HttpClient cliente = new(clientHandler)
                 {
-                    BaseAddress = baseAddress                       
+                    BaseAddress = baseAddress
                 };
 
 
-                
+
 
                 cliente.DefaultRequestHeaders.Add("Prefer", "odata.maxpagesize=2000");
 
-              
+
                 var temp = memoryCache.Get("PE-CountLogin") as string;
 
-                if (sessionId!="")
+                if (sessionId != "")
                 {
-                    
+
                     cookieKey = sessionId;
                 }
                 else
@@ -73,8 +75,8 @@ namespace SalesForce.Util
                     };
 
                     LoginSAP.Login(0, memoryCache, credenciales, ref cookieKey);
-                     
-                   // cookieKey = sessionId;
+
+                    // cookieKey = sessionId;
                 }
 
                 int count = int.Parse(temp ?? "0");
@@ -82,7 +84,7 @@ namespace SalesForce.Util
                 cookieContainer.Add(baseAddress, new Cookie("B1SESSION", cookieKey));
                 count++;
 
-                var respuesta = (dynamic) null;
+                var respuesta = (dynamic)null;
                 StringContent jsonContent = new(jsonBody, Encoding.UTF8, "application/json");
 
                 switch (method)
@@ -91,17 +93,18 @@ namespace SalesForce.Util
                         respuesta = await cliente.GetAsync(endPoint);
                         break;
                     case Method.POST:
-                         respuesta = await cliente.PostAsync(endPoint, jsonContent);
+                        respuesta = await cliente.PostAsync(endPoint, jsonContent);
                         break;
                     case Method.PATCH:
-                         respuesta = await cliente.PatchAsync(endPoint, jsonContent);
+                        respuesta = await cliente.PatchAsync(endPoint, jsonContent);
                         break;
                     case Method.DELETE:
-                         respuesta = await cliente.DeleteAsync(endPoint);
+                        respuesta = await cliente.DeleteAsync(endPoint);
                         break;
                 }
-                
-                if (respuesta.StatusCode == HttpStatusCode.Unauthorized){
+
+                if (respuesta.StatusCode == HttpStatusCode.Unauthorized)
+                {
                     if (count > 2)
                     {
                         response.StatusCode = HttpStatusCode.Unauthorized;
@@ -112,8 +115,10 @@ namespace SalesForce.Util
                     else
                     {
                     }
-                }else{
-                   
+                }
+                else
+                {
+
                     response.StatusCode = respuesta.StatusCode;
                     response.Data = respuesta;
 
@@ -121,9 +126,16 @@ namespace SalesForce.Util
 
                 }
 
-            }catch (Exception ex){
+            }
+            catch (Exception ex)
+            {
                 response.StatusCode = HttpStatusCode.InternalServerError;
                 response.Data = ex.Message;
+            }
+
+            finally
+            {
+               
             }
 
             return response;
@@ -204,6 +216,10 @@ namespace SalesForce.Util
             {
                 response.StatusCode = HttpStatusCode.InternalServerError;
                 response.Data = ex.Message;
+            }
+            finally
+            {
+                
             }
 
             return response;

@@ -9,6 +9,7 @@ using Sap.Data.Hana;
 using System.Configuration;
 using System.Data;
 using SAP_Core.Utils;
+using WebApiNetCore.DAL;
 
 namespace SAP_Core.DAL
 {
@@ -24,6 +25,7 @@ namespace SAP_Core.DAL
             BancoBO banco = null;
             string strSQL = string.Format("CALL {0}.APP_BANKS ('{1}')", DataSource.bd(), imei);
 
+            CorreoAlert correoAlert = new CorreoAlert();
 
             try
             {
@@ -62,6 +64,7 @@ namespace SAP_Core.DAL
                 {
                     connection.Open();
                 }
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_Anexos DAL Vistony", ex.Message.ToString());
 
                 strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Despacho_GetBanco - " + ex.Message+ " - "+imei);
                 HanaCommand command = new HanaCommand(strSQL, connection);

@@ -9,11 +9,13 @@ using Sap.Data.Hana;
 using System.Configuration;
 using System.Data;
 using SAP_Core.Utils;
+using WebApiNetCore.DAL;
 
 namespace SAP_Core.DAL
 {
     public class AgenciaDAL : Connection, IDisposable
     {
+        CorreoAlert correoAlert = new CorreoAlert();
 
         public ListAgencia GetAgencias(string imei)
         {
@@ -62,6 +64,7 @@ namespace SAP_Core.DAL
                 strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Despacho_GetAgencias - " + ex.Message);
                 HanaCommand command = new HanaCommand(strSQL, connection);
 
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Agencies DAL Vistony", ex.Message.ToString());
                 reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
                 connection.Close();
             }

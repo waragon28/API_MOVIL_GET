@@ -499,7 +499,6 @@ C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\bin\Debug\net5.0\runtimes\u
 C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\bin\Debug\net5.0\runtimes\win\lib\netcoreapp3.0\System.Drawing.Common.dll
 C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\bin\Debug\net5.0\Sap.Data.Hana.Core.v2.1.dll
 C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\bin\Debug\net5.0\Sap.Data.Hana.Core.v2.1.pdb
-C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\obj\Debug\net5.0\WebApiNetCore.csproj.AssemblyReference.cache
 C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\obj\Debug\net5.0\Sentry.Attributes.cs
 C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\obj\Debug\net5.0\WebApiNetCore.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\obj\Debug\net5.0\WebApiNetCore.AssemblyInfoInputs.cache
@@ -515,4 +514,5 @@ C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\obj\Debug\net5.0\WebApiNetC
 C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\obj\Debug\net5.0\WebApiNetCore.pdb
 C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\obj\Debug\net5.0\WebApiNetCore.genruntimeconfig.cache
 C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\obj\Debug\net5.0\ref\WebApiNetCore.dll
+C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\obj\Debug\net5.0\WebApiNetCore.csproj.AssemblyReference.cache
 C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\obj\Debug\net5.0\refint\WebApiNetCore.dll

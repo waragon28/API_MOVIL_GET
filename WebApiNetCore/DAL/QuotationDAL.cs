@@ -214,9 +214,6 @@ namespace SAP_Core.DAL
                         ObjDocumentLine.TaxCode = reader["TaxCode"].ToString();
                         ObjDocumentLine.TaxOnly = reader["TaxOnly"].ToString();
                         ObjDocumentLine.WarehouseCode = reader["WhsCode"].ToString();
-                        ObjDocumentLine.U_SYP_FECAT07 = reader["U_SYP_FECAT07"].ToString();
-                        ObjDocumentLine.U_VIST_CTAINGDCTO = reader["U_VIST_CTAINGDCTO"].ToString();
-                        ObjDocumentLine.U_VIS_CommentText = reader["U_VIS_CommentText"].ToString();
                         ObjDocumentLine.U_VIS_PromID = reader["U_VIS_PromID"].ToString();
                         ObjDocumentLine.U_VIS_PromLineID = reader["U_VIS_PromLineID"].ToString();
                         ObjDocumentLine.BaseEntry =Convert.ToInt32(DocEntry);
@@ -261,54 +258,65 @@ namespace SAP_Core.DAL
                         coti_To_OV = new Coti_To_OV();
 
                         coti_To_OV.CardCode=reader["CardCode"].ToString();
-                        coti_To_OV.U_VIS_TipTransGrat = reader["U_VIS_TipTransGrat"].ToString();
-                        coti_To_OV.U_VIS_CompleteOV = reader["U_VIS_CompleteOV"].ToString();
-                        coti_To_OV.U_VIT_VENMOS = reader["U_VIT_VENMOS"].ToString();
-                        coti_To_OV.U_VIS_Flete = reader["U_VIS_Flete"].ToString();
                         coti_To_OV.Comments = reader["Comments"].ToString();
                         coti_To_OV.DocCurrency = reader["DocCur"].ToString();
                         coti_To_OV.DocDate = DateTime.Now.ToString("yyyyMMdd").ToString();//FECHA DE SISTEMA
                         coti_To_OV.DocDueDate = reader["DocDueDate"].ToString();
-                        coti_To_OV.DocumentsOwner = reader["OwnerCode"].ToString();
+                        coti_To_OV.DocumentsOwner = Convert.ToInt32(reader["OwnerCode"].ToString());
                         coti_To_OV.PayToCode = reader["PayToCode"].ToString();
-                        coti_To_OV.PaymentGroupCode = reader["GroupNum"].ToString();
-                        coti_To_OV.SalesPersonCode = reader["SlpCode"].ToString();
+                        coti_To_OV.PaymentGroupCode = Convert.ToInt32(reader["GroupNum"].ToString());
+                        coti_To_OV.SalesPersonCode = Convert.ToInt32(reader["SlpCode"].ToString());
                         coti_To_OV.ShipToCode = reader["ShipToCode"].ToString();
                         coti_To_OV.TaxDate = DateTime.Now.ToString("yyyyMMdd").ToString();//FECHA DE SISTEMA
-                        coti_To_OV.U_SYP_VIST_TG = reader["U_SYP_VIST_TG"].ToString();
+
                         coti_To_OV.U_VIST_SUCUSU = reader["U_VIST_SUCUSU"].ToString();
                         coti_To_OV.U_VIS_AgencyCode = reader["U_VIS_AgencyCode"].ToString();
                         coti_To_OV.U_VIS_AgencyDir = reader["U_VIS_AgencyDir"].ToString();
                         coti_To_OV.U_VIS_AgencyName = reader["U_VIS_AgencyName"].ToString();
                         coti_To_OV.U_VIS_AgencyRUC = reader["U_VIS_AgencyRUC"].ToString();
-                        coti_To_OV.U_VIS_OVCommentary = reader["U_VIS_OVCommentary"].ToString();
                         coti_To_OV.U_VIS_SalesOrderID = reader["U_VIS_SalesOrderID"].ToString();
-                        coti_To_OV.U_SYP_MDMT = reader["U_SYP_MDMT"].ToString();
                         coti_To_OV.U_SYP_TVENTA = reader["U_SYP_TVENTA"].ToString();
-                        coti_To_OV.U_SYP_DOCEXPORT = reader["U_SYP_DOCEXPORT"].ToString();
-                        coti_To_OV.U_SYP_FEEST = reader["U_SYP_FEEST"].ToString();
-                        coti_To_OV.U_SYP_FEMEX = reader["U_SYP_FEMEX"].ToString();
-                        coti_To_OV.U_SYP_FETO = reader["U_SYP_FETO"].ToString();
-                        coti_To_OV.U_VIS_Intent = reader["U_VIS_Intent"].ToString();
+                        coti_To_OV.U_VIS_Intent =Convert.ToDouble(reader["U_VIS_Intent"].ToString());
                         coti_To_OV.U_VIS_Brand = reader["U_VIS_Brand"].ToString();
                         coti_To_OV.U_VIS_Model = reader["U_VIS_Model"].ToString();
                         coti_To_OV.U_VIS_Version = reader["U_VIS_Version"].ToString();
-                        coti_To_OV.U_VIS_EVCommentary = reader["U_VIS_EVCommentary"].ToString();
-                        coti_To_OV.U_VIS_INCommentary = reader["U_VIS_INCommentary"].ToString();
-                        coti_To_OV.U_VIS_DiscountPercent = reader["U_VIS_DiscountPercent"].ToString();
-                        coti_To_OV.U_VIS_ReasonDiscountPercent = reader["U_VIS_ReasonDiscountPercent"].ToString();
-                        coti_To_OV.U_VIS_DeliveryDateOptional = reader["U_VIS_DeliveryDateOptional"].ToString();
-                        coti_To_OV.U_SYP_PDTREV = reader["U_SYP_PDTREV"].ToString();
-                        coti_To_OV.U_ID_Document = reader["U_ID_Document"].ToString();
-                        coti_To_OV.U_Confirma_Pedido_Dup = reader["U_Confirma_Pedido_Dup"].ToString();
-                        coti_To_OV.U_SYP_PDTCRE = reader["U_SYP_PDTCRE"].ToString();
-
                         coti_To_OV.DocType = "dDocument_Items";
                         coti_To_OV.DocObjectCode = "oOrders";
+
+                        coti_To_OV.U_CODCTRL = reader["U_CODCTRL"].ToString();
+                        coti_To_OV.U_SERIECOD = reader["U_SERIECOD"].ToString();
+                        coti_To_OV.U_NROAUTOR = reader["U_NROAUTOR"].ToString();
+                        coti_To_OV.U_NIT = reader["U_NIT"].ToString();
+                        coti_To_OV.U_LB_WITHCC = reader["U_LB_WITHCC"].ToString();
+                        coti_To_OV.U_TIPODOC =Convert.ToInt32(reader["U_TIPODOC"].ToString());
+                        coti_To_OV.U_TIPOCOM = Convert.ToInt32(reader["U_TIPOCOM"].ToString());
+                        coti_To_OV.U_RAZSOC = reader["U_RAZSOC"].ToString();
+                        coti_To_OV.U_CODFORPI = reader["U_CODFORPI"].ToString();
+                        coti_To_OV.U_NROTRAM = reader["U_NROTRAM"].ToString();
+                        coti_To_OV.U_NROPOL = reader["U_NROPOL"].ToString();
+                        coti_To_OV.U_BOLBSP = reader["U_BOLBSP"].ToString();
+                        coti_To_OV.U_ICE = Convert.ToDouble(reader["U_ICE"].ToString());
+                        coti_To_OV.U_EXENTO = Convert.ToDouble(reader["U_EXENTO"].ToString());
+                        coti_To_OV.U_ESTADOFC = reader["U_ESTADOFC"].ToString();
+                        coti_To_OV.U_FACANU = reader["U_FACANU"].ToString();
+                        coti_To_OV.U_TASACERO = Convert.ToDouble(reader["U_TASACERO"].ToString());
+                        coti_To_OV.U_SO1_01RETAILONE = reader["U_SO1_01RETAILONE"].ToString();
+                        coti_To_OV.U_ORIGIN = reader["U_ORIGIN"].ToString();
+                        coti_To_OV.U_SYP_TPOENTME = reader["U_SYP_TPOENTME"].ToString();
+                        coti_To_OV.U_SYP_TPOSALME = reader["U_SYP_TPOSALME"].ToString();
+                        coti_To_OV.U_VIS_AppVersion = reader["U_VIS_AppVersion"].ToString();
+                        coti_To_OV.U_B_State = reader["U_B_State"].ToString();
+                        coti_To_OV.U_B_type = reader["U_B_type"].ToString();
+                        coti_To_OV.U_B_invtype = reader["U_B_invtype"].ToString();
+                        coti_To_OV.U_B_invalidltn = reader["U_B_invalidltn"].ToString();
+                        coti_To_OV.U_TIPOVENTA = reader["U_TIPOVENTA"].ToString();
+                        coti_To_OV.U_Status = reader["U_Status"].ToString();
+                        coti_To_OV.U_AproCoti = reader["U_AproCoti"].ToString();
+
                         coti_To_OV.DocumentLines = LineCoti_To_OV(DocEntry);
                     }
 
-                    string url = "https://ecs-dbs-vistony:50000/b1s/v1/Orders";
+                    string url = "https://ecs-dbs-vistony:50000/b1s/v1/Drafts";
 
                     UsuarioDAL user = new UsuarioDAL();
                     LoginSL sl = user.loginServiceLayer().GetAwaiter().GetResult();
@@ -316,9 +324,6 @@ namespace SAP_Core.DAL
 
 
                     quotationList.SalesOrders = PostWithToken(url,sl.token,Json);
-
-                    
-
 
 
                 }

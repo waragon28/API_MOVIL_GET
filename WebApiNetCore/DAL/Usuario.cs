@@ -202,15 +202,6 @@ namespace SAP_Core.DAL
                         usuario.DeliveryRefusedMoney = reader["DeliveryRefusedMoney"] == null ? "Y" : Convert.ToString(reader["DeliveryRefusedMoney"]);
                         usuario.U_VIS_ManagementType = reader["U_VIS_ManagementType"].ToString().ToUpper();
                         usuario.Superviser = reader["Superviser"].ToString().ToUpper();
-                        /*usuario.ChangeWarehouse = reader.GetSchemaTable().Columns.Contains("ChangeWarehouse") && !reader.IsDBNull(reader.GetOrdinal("ChangeWarehouse"))
-    ? reader["ChangeWarehouse"].ToString().ToUpper()
-    : reader["ChangeWarehouse"].ToString().ToUpper();
-                        usuario.UpdateCustomer = reader.GetSchemaTable().Columns.Contains("UpdateCustomer") && !reader.IsDBNull(reader.GetOrdinal("UpdateCustomer"))
-    ? reader["UpdateCustomer"].ToString().ToUpper()
-    : reader["UpdateCustomer"].ToString().ToUpper();
-                        usuario.CustomerRecovery = ColumnExists(reader, "CustomerRecovery") ? reader["CustomerRecovery"].ToString() : null;
-                        usuario.TypeTaxOilTax = ColumnExists(reader, "TypeTaxOilTax") ? reader["TypeTaxOilTax"].ToString() : null;
-                        */
                         
 
                         listUsuario.Add(usuario);

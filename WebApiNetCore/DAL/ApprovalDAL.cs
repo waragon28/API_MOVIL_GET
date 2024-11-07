@@ -596,13 +596,13 @@ namespace SAP_Core.DAL
                     {
                         AprobacionBo aprobacion = new();
                         aprobacion.Codigo = reader["Código"].ToString();
-                        aprobacion.CodRegla = reader["CodRegla"].ToString().ToUpper();
-                        aprobacion.Etapa = reader["Etapa"].ToString().ToUpper();
-                        aprobacion.Modelo = reader["Modelo"].ToString().ToUpper();
-                        aprobacion.Autorizador = reader["Autorizador"].ToString().ToUpper();
-                        aprobacion.Decisión = reader["Decisión"].ToString().ToUpper();
-                        aprobacion.Comment = reader["Comentario de Aprobación"].ToString().ToUpper();
-                        aprobacion.DecBKP = reader["DecBKP"].ToString().ToUpper();
+                        aprobacion.CodRegla = reader["CodRegla"].ToString();
+                        aprobacion.Etapa = reader["Etapa"].ToString();
+                        aprobacion.Modelo = reader["Modelo"].ToString();
+                        aprobacion.Autorizador = reader["Autorizador"].ToString();
+                        aprobacion.Decisión = reader["Decisión"].ToString();
+                        aprobacion.Comment = reader["Comentario de Aprobación"].ToString();
+                        aprobacion.DecBKP = reader["DecBKP"].ToString();
 
                         listUsuario.Add(aprobacion);
                     }
@@ -979,11 +979,11 @@ namespace SAP_Core.DAL
                     }
                     else if (status == "ardNotApproved")
                     {
-                        A = "R";
+                        A = "N";
                     }
                     else
                     {   
-                        A = "A";
+                        A = "Y";
                     }
                     connection.Open();
                     string strSQL = string.Format("CALL {0}.P_VIS_APPROV_DECISION('{1}','{2}','{3}','{4}')", DataSource.bd(), docEntry, Tipo, A, staRemarkstus);

@@ -311,7 +311,6 @@ namespace SAP_Core.DAL
                         coti_To_OV.U_B_invalidltn = reader["U_B_invalidltn"].ToString();
                         coti_To_OV.U_TIPOVENTA = reader["U_TIPOVENTA"].ToString();
                         coti_To_OV.U_Status = reader["U_Status"].ToString();
-                        coti_To_OV.U_AproCoti = reader["U_AproCoti"].ToString();
 
                         coti_To_OV.DocumentLines = LineCoti_To_OV(DocEntry);
                     }
@@ -352,7 +351,7 @@ namespace SAP_Core.DAL
             ListQuotation agencias = new ListQuotation();
 
            
-            string strSQL = string.Format("SELECT * FROM \"_SYS_BIC\".\"App.SalesForce.Pe.Prod/LIST_QUOTATION\"('PLACEHOLDER' = ('$$Fecha$$','{0}'),'PLACEHOLDER' = ('$$Imei$$','{1}'))",fecha,imei);
+            string strSQL = string.Format("CALL {0}.APP_LIST_COTIZACION('{1}','{2}')",DataSource.bd(), imei,fecha);
 
             try
             {
@@ -368,17 +367,17 @@ namespace SAP_Core.DAL
                     while (reader.Read())
                     {
                         QuotationBO quotation = new QuotationBO();
-                        quotation.Autorizado = reader["Autorizado"].ToString().ToUpper();
-                        quotation.CardCode = reader["CardCode"].ToString().ToUpper();
+                        quotation.Autorizado = reader["Autorizado"].ToString();
+                        quotation.CardCode = reader["CardCode"].ToString();
                         quotation.DocDate = reader["DocDate"].ToString();
                         quotation.DocEntry = int.Parse(reader["DocEntry"].ToString());
-                        quotation.DocNum = reader["DocNum"].ToString().ToUpper();
-                        quotation.StatusAproveed = reader["StatusAproveed"].ToString().ToUpper();
+                        quotation.DocNum = reader["DocNum"].ToString();
+                        quotation.StatusAproveed = reader["StatusAproveed"].ToString();
                         quotation.ReadyGenerateOv = reader["ReadyGenerateOv"].ToString();
                         quotation.DocumentTotal = Double.Parse(reader["DocumentTotal"].ToString());
-                        quotation.CardName = reader["CardName"].ToString().ToUpper();
+                        quotation.CardName = reader["CardName"].ToString();
                         quotation.Object = reader["Object"].ToString();
-                        quotation.LicTradNum = reader["LicTradNum"].ToString().ToUpper();
+                        quotation.LicTradNum = reader["LicTradNum"].ToString();
                         quotation.SlpCode = int.Parse(reader["SlpCode"].ToString());
                         quotation.SalesOrder = reader["SalesOrder"].ToString();
                         quotation.ApprovalCommentary = reader["ApprovalCommentary"].ToString();

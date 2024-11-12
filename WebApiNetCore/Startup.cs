@@ -34,6 +34,15 @@ namespace WebApiNetCore
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApiNetCore", Version = "v1" });
             });
+
+            services.AddCors(options => {
+                options.AddPolicy("AllowAnyOrigin",
+                              builder => builder.AllowAnyOrigin() // Permite cualquier origen                   
+                              .AllowAnyMethod() // Permite cualquier método (GET, POST, etc.)                     
+                              .AllowAnyHeader()); // Permite cualquier encabezado  
+                                                  // Otros servicios... 
+            });     // Otros servicios...
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,7 +63,7 @@ namespace WebApiNetCore
 
            // app.UseResponseCaching();
             app.UseRouting();
-
+            app.UseCors("AllowAnyOrigin");
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

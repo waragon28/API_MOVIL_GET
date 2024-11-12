@@ -716,8 +716,6 @@ namespace SAP_Core.DAL
             List<DispatchResponseDetalle> dispatchResponseListDetalle = new();
             List<DispatchResponse> dispatchResponseList = new();
 
-            DispatchResponseDetalle dispatchResponseDetalle = new();
-
             try
             {
 
@@ -730,7 +728,7 @@ namespace SAP_Core.DAL
 
             foreach (InDispatch dispatch in dispatchList.Dispatch)
             {
-
+                
                 VIS_DIS_Drt1 listTemp = new();
 
                 listTemp.VIS_DIS_DRT1Collection = dispatch.Details.Select(d => new VIS_DIS_Drt1collection
@@ -760,7 +758,10 @@ namespace SAP_Core.DAL
                 
                 
                 foreach (VIS_DIS_Drt1collection temp in listTemp.VIS_DIS_DRT1Collection)
-                { 
+                {
+
+                    DispatchResponseDetalle dispatchResponseDetalle = new();
+
                     string deliveryNote = temp.U_DocEntry;
                     string returnReasonText = temp.U_U_ReturnReasonText;
 

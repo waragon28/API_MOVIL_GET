@@ -60,7 +60,7 @@ namespace WebApiNetCore
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApiNetCore v1"));
             }
-
+            
            // app.UseResponseCaching();
             app.UseRouting();
             app.UseCors("AllowAnyOrigin");

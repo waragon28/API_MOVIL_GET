@@ -516,4 +516,3 @@ C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\obj\Debug\net5.0\WebApiNetC
 C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\obj\Debug\net5.0\ref\WebApiNetCore.dll
 C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\bin\Debug\net5.0\ref\WebApiNetCore.dll
 C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\obj\Debug\net5.0\staticwebassets\WebApiNetCore.StaticWebAssets.xml
-C:\Users\waragon\Desktop\API_Mobil_Get\WebApiNetCore\obj\Debug\net5.0\WebApiNetCore.csproj.AssemblyReference.cache

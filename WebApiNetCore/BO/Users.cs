@@ -62,6 +62,10 @@ namespace SAP_Core.BO
         public string UpdateCustomer { get; set; }
         public string CustomerRecovery { get; set; }
         public string TypeTaxOilTax { get; set; }
-        
+
+        public string Pais { get; set; }
+        public string Moneda { get; set; }
+
+
     }
 }

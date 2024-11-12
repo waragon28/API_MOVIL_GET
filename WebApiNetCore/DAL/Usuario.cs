@@ -202,7 +202,11 @@ namespace SAP_Core.DAL
                         usuario.DeliveryRefusedMoney = reader["DeliveryRefusedMoney"] == null ? "Y" : Convert.ToString(reader["DeliveryRefusedMoney"]);
                         usuario.U_VIS_ManagementType = reader["U_VIS_ManagementType"].ToString().ToUpper();
                         usuario.Superviser = reader["Superviser"].ToString().ToUpper();
-                        
+
+                        usuario.Pais = reader["Pais"].ToString().ToUpper();
+                        usuario.Moneda = reader["Moneda"].ToString().ToUpper();
+
+
 
                         listUsuario.Add(usuario);
                     }

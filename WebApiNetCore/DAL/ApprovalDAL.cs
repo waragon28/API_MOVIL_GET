@@ -639,7 +639,64 @@ namespace SAP_Core.DAL
             return new ListAprovacionBo() { Data = listUsuario };
         }
 
+        public ResponseData ListadoAprobadores(string DocEntry)
+        {
+            ResponseData rs = new ResponseData();
 
+            List<ListStatusAprobadores> LsStatusAprobadores = new List<ListStatusAprobadores>();
+            ListStatusAprobadores ObjStatusAprobadores = new ListStatusAprobadores();
+            HanaDataReader reader;
+            HanaConnection connection = GetConnection();
+            string strSQL = string.Format("CALL {0}.APP_LSAPROBADORES('{1}')", DataSource.bd(), DocEntry);
+
+            try
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+
+                connection.Open();
+                HanaCommand command = new HanaCommand(strSQL, connection);
+
+                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+
+
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        ObjStatusAprobadores = new ListStatusAprobadores();
+                        ObjStatusAprobadores.Aprobador = reader["Aprobado"].ToString();
+                        ObjStatusAprobadores.Estado = reader["Estado"].ToString().ToUpper();
+                        ObjStatusAprobadores.Comentario = reader["Comentario"].ToString().ToUpper();
+
+                        LsStatusAprobadores.Add(ObjStatusAprobadores);
+                    }
+                }
+                rs.StatusCode = HttpStatusCode.Accepted;
+                rs.Data = LsStatusAprobadores;
+
+                connection.Close();
+            }
+            catch (Exception ex)
+            {
+                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval ListadoAprobadores DAL Vistony", ex.Message.ToString());
+                rs.StatusCode = HttpStatusCode.BadRequest;
+                rs.Data = ex.Message.ToString();
+
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+            }
+
+
+            return rs;
+        }
 
         public LstAnexo Get_Anexos(string DocEntry)
         {

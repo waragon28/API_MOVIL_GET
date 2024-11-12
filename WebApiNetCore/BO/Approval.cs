@@ -12,6 +12,14 @@ namespace SAP_Core.BO
     {
         public List<DocumentosBO> Data { get; set; }
     }
+    public class ListStatusAprobadores
+    {
+        public string Aprobador { get; set; }
+        public string Estado { get; set; }
+        public string Comentario { get; set; }
+
+    }
+
     public class DocumentosBO
     {
         public string ID { get; set; }

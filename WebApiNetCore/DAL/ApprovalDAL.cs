@@ -34,6 +34,7 @@ using System.IdentityModel.Tokens.Jwt;
 using ZXing.Aztec.Internal;
 using WebApiNetCore.DAL;
 using Microsoft.Graph.Models;
+using WebApiNetCore.Utils;
 
 
 //using System.Configuration;
@@ -54,80 +55,63 @@ namespace SAP_Core.DAL
 
         public ListApprovalBo Get_Documents (string user,string status)
         {
-            HanaDataReader reader;
-            HanaConnection connection= GetConnection();
             List<ApprovalBo> listUsuario = new List<ApprovalBo>();
-            
-
             string strSQL  = string.Format("CALL {0}.SP_VIS_APPROV_LIST_WDD('1','','','','','{1}','{2}')", DataSource.bd(), user, status);
-           
+
             try
             {
-                if (connection.State == ConnectionState.Open)
+                using (HanaConnection connection = GetConnection())
                 {
-                    connection.Close();
-                }
-
-                connection.Open();
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-
-
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
+                    connection.Open();
+                    using (HanaCommand command = new HanaCommand(strSQL, connection))
                     {
-                        ApprovalBo approval = new();
-                        approval.ID = reader["ID"].ToString();
-                        approval.CarCode = reader["Código SN"].ToString();
-                        approval.CardName= reader["Nombre SN"].ToString().ToUpper();
-                        approval.DocNumBorrador= reader["Pedido Borrador"].ToString().ToUpper();
-                        approval.TypeDocument = reader["TipoDocumento"].ToString().ToUpper();
-                        approval.DocDate = reader["Fecha del Documento"].ToString().ToUpper();
-                        approval.DocTime = reader["Hora"].ToString().ToUpper();
-                        approval.DocTotal = reader["Total del Documento"].ToString().ToUpper();
-                        approval.ConditionalPayment = reader["Condición de Pago"].ToString().ToUpper();
-                        approval.SalesPerson = reader["Empleado de Ventas"].ToString().ToUpper();
-                        approval.MargenDocumento = reader["MargenDocumento"].ToString().ToUpper();
-                        approval.DocEntry = reader["DocEntry"].ToString().ToUpper();
+                        using (HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
+                        {
+                            if (reader.HasRows)
+                            {
+                                while (reader.Read())
+                                {
+                                    ApprovalBo approval = new();
+                                    approval.ID = Other.GetStringValue(reader, "ID");
+                                    approval.CarCode = Other.GetStringValue(reader, "Código SN");
+                                    approval.CardName = Other.GetStringValue(reader, "Nombre SN");
+                                    approval.DocNumBorrador = Other.GetStringValue(reader, "Pedido Borrador");
+                                    approval.TypeDocument = Other.GetStringValue(reader, "TipoDocumento");
+                                    approval.DocDate = Other.GetStringValue(reader, "Fecha del Documento");
+                                    approval.DocTime = Other.GetStringValue(reader, "Hora");
+                                    approval.DocTotal = Other.GetStringValue(reader, "Total del Documento");
+                                    approval.ConditionalPayment = Other.GetStringValue(reader, "Condición de Pago");
+                                    approval.SalesPerson = Other.GetStringValue(reader, "Empleado de Ventas");
+                                    approval.MargenDocumento = Other.GetStringValue(reader, "MargenDocumento");
+                                    approval.DocEntry = Other.GetStringValue(reader, "DocEntry");
 
-                        listUsuario.Add(approval);
+                                    listUsuario.Add(approval);
+                                }
+                            }
+                        }
                     }
+
                 }
 
-                connection.Close();
+            }
+            catch (HanaException ex)
+            {
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - Get_Documents", strSQL + "\n" + $"Error de conexión a HANA: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("No se pudo establecer la conexión con la base de datos HANA.", ex);
             }
             catch (Exception ex)
             {
-
-                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_Documents DAL Vistony", ex.Message.ToString());
-
-                if (connection.State != ConnectionState.Open)
-                {
-                    connection.Open();
-                }
-
-                strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Despacho_Get_Documents - " + ex.Message + " "+ user +" "+status);
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-                connection.Close();
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - Get_Documents", strSQL + "\n" + $"Ocurrió un error al ejecutar la consulta o procesar los datos: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("Ocurrió un error al ejecutar la consulta o procesar los datos.", ex);
             }
-            finally
-            {
-                if (connection.State==ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-            }
+           
             return new ListApprovalBo() { Data= listUsuario };
         }
 
         public ListDocumentosBO Documentos(string id, string User,string status)
         {
-            HanaDataReader reader;
-            HanaConnection connection = GetConnection();
             List<DocumentosBO> listUsuario = new List<DocumentosBO>();
             ListDocumentosBO listDocumentosBO = new ListDocumentosBO();
 
@@ -135,667 +119,505 @@ namespace SAP_Core.DAL
 
             try
             {
-                if (connection.State == ConnectionState.Open)
+                using (HanaConnection connection = GetConnection())
                 {
-                    connection.Close();
-                }
-
-                connection.Open();
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-
-
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
+                    connection.Open();
+                    using (HanaCommand command = new HanaCommand(strSQL, connection))
                     {
-                        DocumentosBO approval = new();
-                        approval.ID = reader["ID"].ToString();
-                        approval.CarCode = reader["Código SN"].ToString();
-                        approval.CardName = reader["Nombre SN"].ToString().ToUpper();
-                        approval.DocDate = reader["Fecha del Documento"].ToString().ToUpper();
-                        approval.DocTime = reader["Hora"].ToString().ToUpper();
-                        approval.DocTotal = Convert.ToDouble(reader["Total del Documento"].ToString());
-                        approval.TypeDocument = reader["TipoDocumento"].ToString().ToUpper();
-                        approval.DocNumBorrador = reader["Pedido Borrador"].ToString().ToUpper();
+                        using (HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
+                        {
+                            if (reader.HasRows)
+                            {
+                                while (reader.Read())
+                                {
+                                    DocumentosBO approval = new();
+                                    approval.ID = Other.GetStringValue(reader, "ID");
+                                    approval.CarCode = Other.GetStringValue(reader, "Código SN");
+                                    approval.CardName = Other.GetStringValue(reader, "Nombre SN").ToUpper();
+                                    approval.DocDate = Other.GetStringValue(reader, "Fecha del Documento");
+                                    approval.DocTime = Other.GetStringValue(reader, "Hora");
+                                    approval.DocTotal = Other.GetDoubleValue(reader, "Total del Documento");
+                                    approval.TypeDocument = Other.GetStringValue(reader, "TipoDocumento");
+                                    approval.DocNumBorrador = Other.GetStringValue(reader, "Pedido Borrador");
+                                    approval.ConditionalPayment = Other.GetStringValue(reader, "Condición de Pago").ToUpper();
+                                    approval.SalesPerson = Other.GetStringValue(reader, "Empleado de Ventas");
+                                    approval.MargenDocumento = Other.GetDoubleValue(reader, "MargenDocumento");
+                                    approval.DocEntry = Other.GetStringValue(reader, "DocEntry");
+                                    approval.CantidadAnexo =Other.GetIntValue(reader, "CantidadAnexo");
+                                    approval.MargenGanancia = Other.GetIntValue(reader, "MargenDocumento");
+                                    listUsuario.Add(approval);
+                                }
+                            }
+                            listDocumentosBO.Data = listUsuario;
+                        }
 
-                        approval.ConditionalPayment = reader["Condición de Pago"].ToString().ToUpper();
-                        approval.SalesPerson = reader["Empleado de Ventas"].ToString().ToUpper();
-                        approval.MargenDocumento = Convert.ToDouble(reader["MargenDocumento"].ToString());
-                        approval.DocEntry = reader["DocEntry"].ToString().ToUpper();
-                        approval.CantidadAnexo =Convert.ToInt32(reader["CantidadAnexo"].ToString());
-                        approval.MargenGanancia = 0;
-                        listUsuario.Add(approval);
+
                     }
                 }
-                listDocumentosBO.Data = listUsuario;
-                connection.Close();
+            }
+            catch (HanaException ex)
+            {
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - Documentos", strSQL + "\n" + $"Error de conexión a HANA: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("No se pudo establecer la conexión con la base de datos HANA.", ex);
             }
             catch (Exception ex)
             {
-
-                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Documentos DAL Vistony", ex.Message.ToString());
-                if (connection.State != ConnectionState.Open)
-                {
-                    connection.Open();
-                }
-
-                strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Despacho_Get_Documents - " + ex.Message + " " + " " + status);
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-                connection.Close();
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - Documentos", strSQL + "\n" + $"Ocurrió un error al ejecutar la consulta o procesar los datos: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("Ocurrió un error al ejecutar la consulta o procesar los datos.", ex);
             }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-            }
+
             return listDocumentosBO;
         }
 
         public ListDeudaBo Get_Deuda (string cardCode)
         {
-            HanaDataReader reader;
-            HanaConnection connection= GetConnection();
             List<DeudaBo> listUsuario = new List<DeudaBo>();
-
             string strSQL  = string.Format("CALL {0}.P_VIS_APPROV_CUSTOMERCREDIT('{1}','','DATOS_DEUDA','')", DataSource.bd(), cardCode);
-           
+
             try
             {
-                if (connection.State == ConnectionState.Open)
+                using (HanaConnection connection = GetConnection())
                 {
-                    connection.Close();
-                }
-                connection.Open();
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-
-
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
+                    connection.Open();
+                    using (HanaCommand command = new HanaCommand(strSQL, connection))
                     {
+                        using (HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
+                        {
+                            if (reader.HasRows)
+                            {
+                                while (reader.Read())
+                                {
+                                    DeudaBo deuda = new();
+                                    deuda.Deuda_Corriente = Other.GetStringValue(reader, "Deuda_Corriente");
+                                    deuda.DIAS_1_8 = Other.GetStringValue(reader, "1-8_DIAS");
+                                    deuda.DIAS_9_15 = Other.GetStringValue(reader, "9-15_DIAS");
+                                    deuda.DIAS_16_30 = Other.GetStringValue(reader, "16-30_DIAS");
+                                    deuda.DIAS_31_60 = Other.GetStringValue(reader, "31-60_DIAS");
+                                    deuda.DIAS_61_90 = Other.GetStringValue(reader, "61-90_DIAS");
+                                    deuda.DIAS_91_120 = Other.GetStringValue(reader, "91-120_DIAS");
+                                    deuda.MAYOR_120_DIAS = Other.GetStringValue(reader, "MAYOR_120_DIAS");
+                                    deuda.Deuda = Other.GetStringValue(reader, "Deuda");
+                                    deuda.LineaCredito = Other.GetStringValue(reader, "LineaCredito");
+                                    deuda.LineaComprometida = Other.GetStringValue(reader, "LineaComprometida");
+                                    deuda.SaldoLinea = Other.GetStringValue(reader, "SaldoLinea");
+                                    deuda.Deuda_Vencida = Other.GetStringValue(reader, "Deuda_Vencida");
 
-                        DeudaBo deuda = new();
-                        deuda.Deuda_Corriente = reader["Deuda_Corriente"].ToString();
-                        deuda.DIAS_1_8 = reader["1-8_DIAS"].ToString().ToUpper();
-                        deuda.DIAS_9_15= reader["9-15_DIAS"].ToString().ToUpper();
-                        deuda.DIAS_16_30 = reader["16-30_DIAS"].ToString().ToUpper();
-                        deuda.DIAS_31_60 = reader["31-60_DIAS"].ToString().ToUpper();
-                        deuda.DIAS_61_90 = reader["61-90_DIAS"].ToString().ToUpper();
-                        deuda.DIAS_91_120 = reader["91-120_DIAS"].ToString().ToUpper();
-                        deuda.MAYOR_120_DIAS = reader["MAYOR_120_DIAS"].ToString().ToUpper();
-                        deuda.Deuda = reader["Deuda"].ToString().ToUpper();
-                        deuda.LineaCredito = reader["LineaCredito"].ToString().ToUpper();
-                        deuda.LineaComprometida = reader["LineaComprometida"].ToString().ToUpper();
-                        deuda.SaldoLinea = reader["SaldoLinea"].ToString().ToUpper();
-                        deuda.Deuda_Vencida = reader["Deuda_Vencida"].ToString().ToUpper();
+                                    listUsuario.Add(deuda);
+                                }
+                            }
+                        }
 
-                        listUsuario.Add(deuda);
                     }
                 }
-
-                connection.Close();
+            }
+            catch (HanaException ex)
+            {
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - Get_Deuda", strSQL + "\n" + $"Error de conexión a HANA: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("No se pudo establecer la conexión con la base de datos HANA.", ex);
             }
             catch (Exception ex)
             {
-                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_Deuda DAL Vistony", ex.Message.ToString());
-
-                if (connection.State != ConnectionState.Open)
-                {
-                    connection.Open();
-                }
-
-                strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Despacho_Get_Deuda - " + ex.Message + " " + cardCode);
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-                connection.Close();
-            }
-            finally
-            {
-                if (connection.State==ConnectionState.Open)
-                {
-                    connection.Close();
-                }
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - Get_Deuda", strSQL + "\n" + $"Ocurrió un error al ejecutar la consulta o procesar los datos: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("Ocurrió un error al ejecutar la consulta o procesar los datos.", ex);
             }
             return new ListDeudaBo() { Data= listUsuario };
         }
 
         public ListLineaBo Get_Linea(string cardCode)
         {
-            HanaDataReader reader;
-            HanaConnection connection = GetConnection();
             List<LineaBo> listUsuario = new List<LineaBo>();
 
             string strSQL = string.Format("CALL {0}.P_VIS_APPROV_CUSTOMERCREDIT('{1}','','DEUDA_CORPORATIVA','')", DataSource.bd(), cardCode);
 
-
             try
             {
-                if (connection.State == ConnectionState.Open)
+                using (HanaConnection connection = GetConnection())
                 {
-                    connection.Close();
-                }
-
-                connection.Open();
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-
-
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
+                    connection.Open();
+                    using (HanaCommand command = new HanaCommand(strSQL, connection))
                     {
-                        LineaBo linea = new();
-                        linea.Deuda = reader["Deuda"].ToString();
-                        linea.Entregas = reader["Entregas"].ToString().ToUpper();
-                        linea.Pedido = reader["Pedido"].ToString().ToUpper();
-                        linea.Oportunidades = reader["Oportunidades"].ToString().ToUpper();
-                        linea.Cheques = reader["Cheques"].ToString().ToUpper();
-                        linea.UltPago = reader["UltPago"].ToString().ToUpper();
-                        linea.UltPagDoc = reader["UltPagDoc"].ToString().ToUpper();
-                        linea.UltFact = reader["UltFact"].ToString().ToUpper();
-                        linea.UltFacDoc = reader["UltFacDoc"].ToString().ToUpper();
-                        linea.SumaProtesto = reader["SumaProtesto"].ToString().ToUpper();
-                        linea.LineaCredito = reader["LineaCredito"].ToString().ToUpper();
-                        linea.LineaComprometida = reader["LineaComprometida"].ToString().ToUpper();
-                        linea.SaldoLinea = reader["SaldoLinea"].ToString().ToUpper();
+                        using (HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
+                        {
+                            if (reader.HasRows)
+                            {
+                                while (reader.Read())
+                                {
+                                    LineaBo linea = new();
+                                    linea.Deuda = Other.GetStringValue(reader, "Deuda");
+                                    linea.Entregas = Other.GetStringValue(reader, "Entregas");
+                                    linea.Pedido =  Other.GetStringValue(reader, "Pedido");
+                                    linea.Oportunidades =  Other.GetStringValue(reader, "Oportunidades");
+                                    linea.Cheques =  Other.GetStringValue(reader, "Cheques");
+                                    linea.UltPago =  Other.GetStringValue(reader, "UltPago");
+                                    linea.UltPagDoc =  Other.GetStringValue(reader, "UltPagDoc");
+                                    linea.UltFact =  Other.GetStringValue(reader, "UltFact");
+                                    linea.UltFacDoc =  Other.GetStringValue(reader, "UltFacDoc");
+                                    linea.SumaProtesto =  Other.GetStringValue(reader, "SumaProtesto");
+                                    linea.LineaCredito =  Other.GetStringValue(reader, "LineaCredito");
+                                    linea.LineaComprometida =  Other.GetStringValue(reader, "LineaComprometida");
+                                    linea.SaldoLinea =  Other.GetStringValue(reader, "SaldoLinea");
 
-                        listUsuario.Add(linea);
+                                    listUsuario.Add(linea);
+                                }
+                            }
+                        }
                     }
                 }
-
-                connection.Close();
+            }
+            catch (HanaException ex)
+            {
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - Get_Linea", strSQL + "\n" + $"Error de conexión a HANA: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("No se pudo establecer la conexión con la base de datos HANA.", ex);
             }
             catch (Exception ex)
             {
-
-                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_Linea DAL Vistony", ex.Message.ToString());
-
-                if (connection.State != ConnectionState.Open)
-                {
-                    connection.Open();
-                }
-
-                strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Despacho_Get_Deuda - " + ex.Message + " " + cardCode);
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-                connection.Close();
-
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - Get_Linea", strSQL + "\n" + $"Ocurrió un error al ejecutar la consulta o procesar los datos: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("Ocurrió un error al ejecutar la consulta o procesar los datos.", ex);
             }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-            }
+
             return new ListLineaBo() { Data = listUsuario };
         }
 
         public ListClienteBo Get_Cliente(string cardCode,string user)
         {
-            HanaDataReader reader;
-            HanaConnection connection = GetConnection();
             List<ClienteBo> listUsuario = new List<ClienteBo>();
-
             string strSQL = string.Format("CALL {0}.P_VIS_APPROV_CUSTOMERCREDIT('{1}','','DATOS_CLIENTE','')", DataSource.bd(), cardCode);
-
             try
             {
-                if (connection.State == ConnectionState.Open)
+                using (HanaConnection connection = GetConnection())
                 {
-                    connection.Close();
-                }
-
-                connection.Open();
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-
-
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
+                    connection.Open();
+                    using (HanaCommand command = new HanaCommand(strSQL, connection))
                     {
+                        using (HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
+                        {
+                            if (reader.HasRows)
+                            {
+                                while (reader.Read())
+                                {
+                                    ClienteBo cliente = new();
+                                    cliente.PEDocumentID = Other.GetStringValue(reader, "PEDocumentID");
+                                    cliente.Name = Other.GetStringValue(reader, "Name").ToUpper();
+                                    cliente.RUC = Other.GetStringValue(reader, "RUC");
+                                    cliente.direccion = Other.GetStringValue(reader, "direccion").ToUpper();
+                                    cliente.ciudad = Other.GetStringValue(reader, "ciudad").ToUpper();
+                                    cliente.CodVendedor = Other.GetStringValue(reader, "CodVendedor");
+                                    cliente.NomVendedor = Other.GetStringValue(reader, "NomVendedor").ToUpper();
+                                    cliente.Supervisor = Other.GetStringValue(reader, "Supervisor").ToUpper();
+                                    cliente.AnalistaCreditos = Other.GetStringValue(reader, "AnalistaCreditos").ToUpper();
+                                    cliente.SectoristaVenta = Other.GetStringValue(reader, "SectoristaVenta").ToUpper();
+                                    cliente.nomudn = Other.GetStringValue(reader, "nomudn");
+                                    cliente.Prioridad = Other.GetStringValue(reader, "Prioridad").ToUpper();
+                                    cliente.Castigado = Other.GetStringValue(reader, "Castigado").ToUpper();
+                                    ListPedidoBo listPedido = Get_Pedidos(Other.GetStringValue(reader, "PEDocumentID"), user);
 
-                        ClienteBo cliente = new();
-                        cliente.PEDocumentID = reader["PEDocumentID"].ToString();
-                        cliente.Name = reader["Name"].ToString().ToUpper();
-                        cliente.RUC = reader["RUC"].ToString().ToUpper();
-                        cliente.direccion = reader["direccion"].ToString().ToUpper();
-                        cliente.ciudad = reader["ciudad"].ToString().ToUpper();
-                        cliente.CodVendedor = reader["CodVendedor"].ToString().ToUpper();
-                        cliente.NomVendedor = reader["NomVendedor"].ToString().ToUpper();
-                        cliente.Supervisor = reader["Supervisor"].ToString().ToUpper();
-                        cliente.AnalistaCreditos = reader["AnalistaCreditos"].ToString().ToUpper();
-                        cliente.SectoristaVenta = reader["SectoristaVenta"].ToString().ToUpper();
-                        cliente.nomudn = reader["nomudn"].ToString().ToUpper();
-                        cliente.Prioridad = reader["Prioridad"].ToString().ToUpper();
-                        cliente.Castigado = reader["Castigado"].ToString().ToUpper();
-                        ListPedidoBo listPedido= Get_Pedidos(reader["PEDocumentID"].ToString(),user);
+                                    cliente.Pedidos = listPedido.Data;
 
-                        //cliente.Pedidos = (listPedido.Data.Count == 0 ) ? null : listPedido.Data;
-                        cliente.Pedidos = listPedido.Data;
-
-                        listUsuario.Add(cliente);
+                                    listUsuario.Add(cliente);
+                                }
+                            }
+                        }
                     }
                 }
-
-                connection.Close();
+            }
+            catch (HanaException ex)
+            {
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - Get_Deuda", strSQL + "\n" + $"Error de conexión a HANA: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("No se pudo establecer la conexión con la base de datos HANA.", ex);
             }
             catch (Exception ex)
             {
-                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_Cliente DAL Vistony", ex.Message.ToString());
-
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-                if (connection.State != ConnectionState.Open)
-                {
-                    connection.Open();
-                }
-
-                strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Despacho_Get_Cliente - " + ex.Message + " " + cardCode + " " + user);
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-                connection.Close();
-
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - Get_Deuda", strSQL + "\n" + $"Ocurrió un error al ejecutar la consulta o procesar los datos: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("Ocurrió un error al ejecutar la consulta o procesar los datos.", ex);
             }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-            }
+
             return new ListClienteBo() { Data = listUsuario };
         }
 
         private ListPedidoBo Get_Pedidos(string cardCode,string user)
         {
-            HanaDataReader reader;
-            HanaConnection connection = GetConnection();
             List<PedidoBo> listUsuario = new List<PedidoBo>();
 
             string strSQL = string.Format("CALL {0}.P_VIS_APPROV_CUSTOMERCREDIT('{1}','','DATOS_PEDIDO','{2}')", DataSource.bd(), cardCode,user);
 
             try
             {
-                if (connection.State == ConnectionState.Open)
+                using (HanaConnection connection = GetConnection())
                 {
-                    connection.Close();
-                }
-
-                connection.Open();
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-
-
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
+                    connection.Open();
+                    using (HanaCommand command = new HanaCommand(strSQL, connection))
                     {
-                        PedidoBo pedido = new();
-                        pedido.EntryDraft = reader["EntryDraft"].ToString();
-                        pedido.Pedido = reader["Pedido"].ToString().ToUpper();
-                        pedido.DocDate = reader["Fecha de Documento"].ToString().ToUpper();
-                        pedido.DocTime = reader["Hora"].ToString().ToUpper();
-                        pedido.MargenGanancia = reader["MargenGanancia"].ToString().ToUpper();
-                        pedido.PaymentTerminal = reader["Condición de Pago"].ToString().ToUpper();
-                        pedido.Moneda = reader["Moneda"].ToString().ToUpper();
-                        pedido.DocTotal = reader["Total de Documento"].ToString().ToUpper();
-                        pedido.SalesPerson = reader["Empleado de Ventas"].ToString().ToUpper();
-                        pedido.Coment = reader["Comentarios"].ToString().ToUpper();
-                        pedido.DocType = reader["TipoDocumento"].ToString().ToUpper();
-                       
+                        using (HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
+                        {
+                            if (reader.HasRows)
+                            {
+                                while (reader.Read())
+                                {
+                                    PedidoBo pedido = new();
+                                    pedido.EntryDraft = Other.GetStringValue(reader, "EntryDraft");
+                                    pedido.Pedido = Other.GetStringValue(reader, "Pedido");
+                                    pedido.DocDate = Other.GetStringValue(reader, "Fecha de Documento");
+                                    pedido.DocTime = Other.GetStringValue(reader, "Hora");
+                                    pedido.MargenGanancia = Other.GetStringValue(reader, "MargenGanancia");
+                                    pedido.PaymentTerminal = Other.GetStringValue(reader, "Condición de Pago");
+                                    pedido.Moneda = Other.GetStringValue(reader, "Moneda");
+                                    pedido.DocTotal = Other.GetStringValue(reader, "Total de Documento");
+                                    pedido.SalesPerson = Other.GetStringValue(reader, "Empleado de Ventas");
+                                    pedido.Coment = Other.GetStringValue(reader, "Comentarios");
+                                    pedido.DocType = Other.GetStringValue(reader, "TipoDocumento");
 
-                        listUsuario.Add(pedido);
+                                    listUsuario.Add(pedido);
+                                }
+                            }
+                        }
                     }
                 }
 
-                connection.Close();
+            }
+            catch (HanaException ex)
+            {
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - Get_Pedidos", strSQL + "\n" + $"Error de conexión a HANA: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("No se pudo establecer la conexión con la base de datos HANA.", ex);
             }
             catch (Exception ex)
             {
-                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_Pedidos DAL Vistony", ex.Message.ToString());
-
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-                if (connection.State != ConnectionState.Open)
-                {
-                    connection.Open();
-                }
-
-                strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Despacho_Get_Cliente - " + ex.Message + " " + cardCode + " " + user);
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-                connection.Close();
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - Get_Pedidos", strSQL + "\n" + $"Ocurrió un error al ejecutar la consulta o procesar los datos: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("Ocurrió un error al ejecutar la consulta o procesar los datos.", ex);
             }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-            }
+
             return new ListPedidoBo() { Data = listUsuario };
         } 
 
         public ListPedidoDetalleBo Get_PedidosDetalle(string docEntry,string Tipo)
         {
-            HanaDataReader reader;
-            HanaConnection connection = GetConnection();
             List<PedidoDetalleBo> listUsuario = new List<PedidoDetalleBo>();
             string strSQL = string.Empty;
 
-                strSQL= string.Format("CALL {0}.P_VIS_APPROV_DETAIL_DRAFT('{1}','{2}')", DataSource.bd(), docEntry,Tipo);
-           
+            strSQL= string.Format("CALL {0}.P_VIS_APPROV_DETAIL_DRAFT('{1}','{2}')", DataSource.bd(), docEntry,Tipo);
+
             try
             {
-                if (connection.State == ConnectionState.Open)
+                using (HanaConnection connection = GetConnection())
                 {
-                    connection.Close();
-                }
-                connection.Open();
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-
-
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
+                    connection.Open();
+                    using (HanaCommand command = new HanaCommand(strSQL, connection))
                     {
-                        PedidoDetalleBo pedido = new();
-                        pedido.numArticle = reader["Número de Artículo"].ToString();
-                        pedido.ItemName = reader["Descripción de Artículo"].ToString().ToUpper();
-                        pedido.Quantity = reader["Cantidad"].ToString().ToUpper();
-                        pedido.OnHand = reader["Cantidad En Almacén"].ToString().ToUpper();
-                        pedido.PriceUnit = reader["Precio Unit"].ToString().ToUpper();
-                        pedido.DescontPercent = reader["% Desc"].ToString().ToUpper();
-                        pedido.LineTotal = reader["Total Linea"].ToString().ToUpper();
-                        pedido.issetImpuesto = reader["Sólo Impuesto"].ToString().ToUpper();
-                        pedido.CodImpuesto = reader["Cod Impuesto"].ToString().ToUpper();
-                        pedido.Warehouse = reader["Almacén"].ToString().ToUpper();
-                        pedido.MarginGain = reader["Margen Ganancia"].ToString().ToUpper() + "%";
-                        if (Tipo!="")
+                        using (HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
                         {
-                            pedido.USUARIO_ID = reader["USUARIO_ID"].ToString();
-                            pedido.USUARIO = reader["USUARIO"].ToString();
+                            if (reader.HasRows)
+                            {
+                                while (reader.Read())
+                                {
+                                    PedidoDetalleBo pedido = new();
+                                    pedido.numArticle = Other.GetStringValue(reader, "Número de Artículo");
+                                    pedido.ItemName = Other.GetStringValue(reader, "Descripción de Artículo").ToUpper();
+                                    pedido.Quantity = Other.GetStringValue(reader, "Cantidad");
+                                    pedido.OnHand = Other.GetStringValue(reader, "Cantidad En Almacén");
+                                    pedido.PriceUnit = Other.GetStringValue(reader, "Precio Unit");
+                                    pedido.DescontPercent = Other.GetStringValue(reader, "% Desc");
+                                    pedido.LineTotal = Other.GetStringValue(reader, "Total Linea");
+                                    pedido.issetImpuesto = Other.GetStringValue(reader, "Sólo Impuesto");
+                                    pedido.CodImpuesto = Other.GetStringValue(reader, "Cod Impuesto");
+                                    pedido.Warehouse = Other.GetStringValue(reader, "Almacén");
+                                    pedido.MarginGain = Other.GetStringValue(reader, "Margen Ganancia") + "%";
+                                    if (Tipo != "")
+                                    {
+                                        pedido.USUARIO_ID = Other.GetStringValue(reader, "USUARIO_ID");
+                                        pedido.USUARIO = Other.GetStringValue(reader, "USUARIO");
+                                    }
+                                    pedido.PriceHistory = Other.GetDoubleValue(reader, "PriceHistory");
+                                    pedido.PriceReference = Other.GetDoubleValue(reader, "PriceReference");
+                                    pedido.PorcUltComExc = Other.GetDoubleValue(reader, "PorcUltComExc");
+                                    listUsuario.Add(pedido);
+                                }
+                            }
                         }
-                        pedido.PriceHistory = Convert.ToDouble(reader["PriceHistory"].ToString());
-                        pedido.PriceReference = Convert.ToDouble(reader["PriceReference"].ToString());
-                        pedido.PorcUltComExc = Convert.ToDouble(reader["PorcUltComExc"].ToString());
-                        listUsuario.Add(pedido);
                     }
                 }
-
-                connection.Close();
+            }
+            catch (HanaException ex)
+            {
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - Get_PedidosDetalle", strSQL + "\n" + $"Error de conexión a HANA: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("No se pudo establecer la conexión con la base de datos HANA.", ex);
             }
             catch (Exception ex)
             {
-                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_PedidosDetalle DAL Vistony", ex.Message.ToString());
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-                if (connection.State != ConnectionState.Open)
-                {
-                    connection.Open();
-                }
-
-                strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Despacho_Get_Cliente - " + ex.Message + " " + docEntry);
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-                connection.Close();
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - Get_PedidosDetalle", strSQL + "\n" + $"Ocurrió un error al ejecutar la consulta o procesar los datos: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("Ocurrió un error al ejecutar la consulta o procesar los datos.", ex);
             }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-            }
+
             return new ListPedidoDetalleBo() { Data = listUsuario };
         }
 
         public ListAprovacionBo Get_Rules(string docEntry,string Tipo)
         {
-            HanaDataReader reader;
-            HanaConnection connection = GetConnection();
             List<AprobacionBo> listUsuario = new List<AprobacionBo>();
 
             string strSQL = string.Format("CALL {0}.P_VIS_APPROV_DETAIL_RULE('{1}','{2}')", DataSource.bd(), docEntry, Tipo);
 
             try
             {
-                if (connection.State == ConnectionState.Open)
+                using (HanaConnection connection = GetConnection())
                 {
-                    connection.Close();
-                }
-
-                connection.Open();
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-
-
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
+                    connection.Open();
+                    using (HanaCommand command = new HanaCommand(strSQL, connection))
                     {
-                        AprobacionBo aprobacion = new();
-                        aprobacion.Codigo = reader["Código"].ToString();
-                        aprobacion.CodRegla = reader["CodRegla"].ToString().ToUpper();
-                        aprobacion.Etapa = reader["Etapa"].ToString().ToUpper();
-                        aprobacion.Modelo = reader["Modelo"].ToString().ToUpper();
-                        aprobacion.Autorizador = reader["Autorizador"].ToString().ToUpper();
-                        aprobacion.Decisión = reader["Decisión"].ToString().ToUpper();
-                        aprobacion.Comment = reader["Comentario de Aprobación"].ToString().ToUpper();
-                        aprobacion.DecBKP = reader["DecBKP"].ToString().ToUpper();
+                        using (HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
+                        {
+                            if (reader.HasRows)
+                            {
+                                while (reader.Read())
+                                {
+                                    AprobacionBo aprobacion = new();
+                                    aprobacion.Codigo = Other.GetStringValue(reader, "Código");
+                                    aprobacion.CodRegla = Other.GetStringValue(reader, "CodRegla").ToUpper();
+                                    aprobacion.Etapa = Other.GetStringValue(reader, "Etapa").ToUpper();
+                                    aprobacion.Modelo = Other.GetStringValue(reader, "Modelo").ToUpper();
+                                    aprobacion.Autorizador = Other.GetStringValue(reader, "Autorizador").ToUpper();
+                                    aprobacion.Decisión = Other.GetStringValue(reader, "Decisión").ToUpper();
+                                    aprobacion.Comment = Other.GetStringValue(reader, "Comentario de Aprobación").ToUpper();
+                                    aprobacion.DecBKP = Other.GetStringValue(reader, "DecBKP").ToUpper();
 
-                        listUsuario.Add(aprobacion);
+                                    listUsuario.Add(aprobacion);
+                                }
+                            }
+                        }
                     }
                 }
 
-                connection.Close();
+
+            }
+            catch (HanaException ex)
+            {
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - Get_Rules", strSQL + "\n" + $"Error de conexión a HANA: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("No se pudo establecer la conexión con la base de datos HANA.", ex);
             }
             catch (Exception ex)
             {
-                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_Rules DAL Vistony", ex.Message.ToString());
-
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-                if (connection.State != ConnectionState.Open)
-                {
-                    connection.Open();
-                }
-
-                strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Despacho_Get_Cliente - " + ex.Message + " " + docEntry);
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-                connection.Close();
-            }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - Get_Rules", strSQL + "\n" + $"Ocurrió un error al ejecutar la consulta o procesar los datos: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("Ocurrió un error al ejecutar la consulta o procesar los datos.", ex);
             }
             return new ListAprovacionBo() { Data = listUsuario };
         }
 
         public LstAnexo Get_Anexos(string DocEntry)
         {
-            HanaDataReader reader;
-            HanaConnection connection = GetConnection();
             List<Anexo> listAnexo = new List<Anexo>();
             LstAnexo lstAnexo = new LstAnexo();
             string strSQL = string.Format("CALL {0}.P_VIS_APPROV_ANEXO('{1}')", DataSource.bd(), DocEntry);
 
-           
             try
             {
-                if (connection.State == ConnectionState.Open)
+                using (HanaConnection connection = GetConnection())
                 {
-                    connection.Close();
-                }
-
-                connection.Open();
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-
-
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
+                    connection.Open();
+                    using (HanaCommand command = new HanaCommand(strSQL, connection))
                     {
-                        Anexo PriceHistoy = new();
-                        PriceHistoy.Documento = reader["Archivo"].ToString();
-                        PriceHistoy.Date = reader["Date"].ToString();
-                        PriceHistoy.Link = reader["subPath"].ToString();
+                        using (HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
+                        {
+                            if (reader.HasRows)
+                            {
+                                while (reader.Read())
+                                {
+                                    Anexo PriceHistoy = new();
+                                    PriceHistoy.Documento = Other.GetStringValue(reader, "Archivo");
+                                    PriceHistoy.Date = Other.GetStringValue(reader, "Date");
+                                    PriceHistoy.Link = Other.GetStringValue(reader, "subPath");
 
-                        listAnexo.Add(PriceHistoy);
+                                    listAnexo.Add(PriceHistoy);
+                                }
+                            }
+                        }
                     }
                 }
                 lstAnexo.Data = listAnexo;
 
-                connection.Close();
+            }
+            catch (HanaException ex)
+            {
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - Get_Anexos", strSQL + "\n" + $"Error de conexión a HANA: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("No se pudo establecer la conexión con la base de datos HANA.", ex);
             }
             catch (Exception ex)
             {
-                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_Anexos DAL Vistony", ex.Message.ToString());
-
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-                if (connection.State != ConnectionState.Open)
-                {
-                    connection.Open();
-                }
-
-                strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Get_Anexos - " + ex.Message + " " + DocEntry);
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-                connection.Close();
-            }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - Get_Anexos", strSQL + "\n" + $"Ocurrió un error al ejecutar la consulta o procesar los datos: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("Ocurrió un error al ejecutar la consulta o procesar los datos.", ex);
             }
             return lstAnexo;
         }
 
         public List<PriceHistoy> Get_PriceHistory(string ItemCode)
         {
-            HanaDataReader reader;
-            HanaConnection connection = GetConnection();
             List<PriceHistoy> listPriceHistoy = new List<PriceHistoy>();
             string strSQL = string.Format("CALL {0}.P_VIS_APPROV_PRICE_HISTORY('{1}')", DataSource.bd(), ItemCode);
 
             try
             {
-                if (connection.State == ConnectionState.Open)
+                using (HanaConnection connection = GetConnection())
                 {
-                    connection.Close();
-                }
-
-                connection.Open();
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-
-
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
+                    connection.Open();
+                    using (HanaCommand command = new HanaCommand(strSQL, connection))
                     {
-                        PriceHistoy PriceHistoy = new();
-                        PriceHistoy.CardName = reader["CardName"].ToString();
-                        PriceHistoy.DocDate = reader["DocDate"].ToString().ToUpper();
-                        PriceHistoy.Price = Convert.ToDouble(reader["Price"].ToString());
+                        using (HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
+                        {
+                            if (reader.HasRows)
+                            {
+                                while (reader.Read())
+                                {
+                                    PriceHistoy PriceHistoy = new();
+                                    PriceHistoy.CardName = Other.GetStringValue(reader, "CardName");
+                                    PriceHistoy.DocDate = Other.GetStringValue(reader, "DocDate").ToUpper();
+                                    PriceHistoy.Price = Other.GetDoubleValue(reader,"Price");
 
-                        listPriceHistoy.Add(PriceHistoy);
+                                    listPriceHistoy.Add(PriceHistoy);
+                                }
+                            }
+                        }
                     }
                 }
-
-                connection.Close();
+            }
+            catch (HanaException ex)
+            {
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - Get_PriceHistory", strSQL + "\n" + $"Error de conexión a HANA: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("No se pudo establecer la conexión con la base de datos HANA.", ex);
             }
             catch (Exception ex)
             {
-                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval Get_PriceHistory DAL Vistony", ex.Message.ToString());
-
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-                if (connection.State != ConnectionState.Open)
-                {
-                    connection.Open();
-                }
-
-                strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Get_PriceHistory - " + ex.Message + " " + ItemCode);
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-                connection.Close();
-            }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - Get_PriceHistory", strSQL + "\n" + $"Ocurrió un error al ejecutar la consulta o procesar los datos: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("Ocurrió un error al ejecutar la consulta o procesar los datos.", ex);
             }
             return listPriceHistoy;
         }
 
         public async Task<ResponseData> decicion(string json,string docEntry,string sessionId, string Tipo)
         {
+            string strSQL = string.Empty;
 
             ResponseData response = new ResponseData();
-
-            HanaConnection connection = GetConnection();
             if (Tipo=="")
             {
                  response = await serviceLayer.Request("/b1s/v1/ApprovalRequests(" + docEntry + ")", Method.PATCH, json, sessionId);
-                //HanaConnection connection = GetConnection();
-                HanaDataReader reader;
 
                 try
                 {
-                    if (connection.State == ConnectionState.Open)
-                    {
-                        connection.Close();
-                    }
-
                     if (response.StatusCode == HttpStatusCode.NoContent)
                     {
                         response.Data = "Actualización guardada exitosamente";
@@ -812,38 +634,20 @@ namespace SAP_Core.DAL
                         response.StatusCode = HttpStatusCode.FailedDependency;
                     }
                 }
+                catch (HanaException ex)
+                {
+                    Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - decicion","JSON : "+ json.ToString()+"\n"+" DocEntry" + docEntry+ "\n"+"Tipo: "+ Tipo + "\n" + $"Error de conexión a HANA: {ex.Message}");
+                    SentrySdk.CaptureException(ex);
+                    throw new Exception("No se pudo establecer la conexión con la base de datos HANA.", ex);
+                }
                 catch (Exception ex)
                 {
-
-                    correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval decicion DAL Vistony", ex.Message.ToString());
-
-                    if (connection.State == ConnectionState.Open)
-                    {
-                        connection.Close();
-                    }
-                    if (connection.State != ConnectionState.Open)
-                    {
-                        connection.Open();
-                    }
-
-                    string strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Despacho_decicion - " + ex.Message);
-                    HanaCommand command = new HanaCommand(strSQL, connection);
-
-                    reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-                    connection.Close();
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                    {
-                        connection.Close();
-                    }
-
-
+                    Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - decicion", "JSON : " + json.ToString() + "\n" + " DocEntry" + docEntry + "\n" + "Tipo: " + Tipo + "\n" + $"Error de conexión a HANA: {ex.Message}");
+                    SentrySdk.CaptureException(ex);
+                    throw new Exception("Ocurrió un error al ejecutar la consulta o procesar los datos.", ex);
                 }
 
 
-               
             }
             else
             {
@@ -868,49 +672,42 @@ namespace SAP_Core.DAL
                     {   
                         A = "A";
                     }
-                    connection.Open();
-                    string strSQL = string.Format("CALL {0}.P_VIS_APPROV_DECISION('{1}','{2}','{3}','{4}')", DataSource.bd(), docEntry, Tipo, A, staRemarkstus);
-                    HanaCommand command = new HanaCommand(strSQL, connection);
-                    HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-                    connection.Close();
-                    response = new ResponseData();
-                    response.Data = "OK";
-                    response.StatusCode = HttpStatusCode.OK;
 
+                    strSQL=string.Format("CALL {0}.P_VIS_APPROV_DECISION('{1}','{2}','{3}','{4}')", DataSource.bd(), docEntry, Tipo, A, staRemarkstus);
+
+                    using (HanaConnection connection = GetConnection())
+                    {
+                        connection.Open();
+                        using (HanaCommand command = new HanaCommand(strSQL, connection))
+                        {
+                            using (HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
+                            {
+                                response = new ResponseData();
+                                response.Data = "OK";
+                                response.StatusCode = HttpStatusCode.OK;
+                            } 
+                        }
+                    }
+
+                }
+                catch (HanaException ex)
+                {
+                    Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - decicion 2 ", "JSON : " + json.ToString() + "\n" + " DocEntry" + docEntry + "\n" + "Tipo: " + Tipo + "\n" + strSQL +"\n"+ $"Error de conexión a HANA: {ex.Message}");
+                    SentrySdk.CaptureException(ex);
+                    throw new Exception("No se pudo establecer la conexión con la base de datos HANA.", ex);
                 }
                 catch (Exception ex)
                 {
-                    correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval decicion DAL Vistony 2", ex.Message.ToString());
-
-                    if (connection.State == ConnectionState.Open)
-                    {
-                        connection.Close();
-                    }
-                    if (connection.State != ConnectionState.Open)
-                    {
-                        connection.Open();
-                    }
-
-                    string strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Despacho_decicion - " + ex.Message);
-                    HanaCommand command = new HanaCommand(strSQL, connection);
-
-                    HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-                    connection.Close();
+                    Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - decicion 2 ", "JSON : " + json.ToString() + "\n" + " DocEntry" + docEntry + "\n" + "Tipo: " + Tipo + "\n" + strSQL + "\n" + $"Error de conexión a HANA: {ex.Message}");
+                    SentrySdk.CaptureException(ex);
+                    throw new Exception("Ocurrió un error al ejecutar la consulta o procesar los datos.", ex);
                 }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                    {
-                        connection.Close();
-                    }
 
-                }
             }
 
             return response;
 
         }
-
 
         public ResponseData ListadoAprobadores(string DocEntry)
         {
@@ -918,56 +715,51 @@ namespace SAP_Core.DAL
 
             List<ListStatusAprobadores> LsStatusAprobadores = new List<ListStatusAprobadores>();
             ListStatusAprobadores ObjStatusAprobadores = new ListStatusAprobadores();
-            HanaDataReader reader;
-            HanaConnection connection = GetConnection();
             string strSQL = string.Format("CALL {0}.APP_LSAPROBADORES('{1}')", DataSource.bd(), DocEntry);
 
             try
             {
-                if (connection.State == ConnectionState.Open)
+
+
+                using (HanaConnection connection = GetConnection())
                 {
-                    connection.Close();
-                }
-
-                connection.Open();
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-
-
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
+                    connection.Open();
+                    using (HanaCommand command = new HanaCommand(strSQL, connection))
                     {
-                        ObjStatusAprobadores = new ListStatusAprobadores();
-                        ObjStatusAprobadores.Aprobador = reader["Aprobado"].ToString();
-                        ObjStatusAprobadores.Estado = reader["Estado"].ToString().ToUpper();
-                        ObjStatusAprobadores.Comentario = reader["Comentario"].ToString().ToUpper();
+                        using (HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
+                        {
+                            if (reader.HasRows)
+                            {
+                                while (reader.Read())
+                                {
+                                    ObjStatusAprobadores = new ListStatusAprobadores();
+                                    ObjStatusAprobadores.Aprobador = Other.GetStringValue(reader, "Aprobado");
+                                    ObjStatusAprobadores.Estado = Other.GetStringValue(reader, "Estado").ToUpper();
+                                    ObjStatusAprobadores.Comentario = Other.GetStringValue(reader, "Comentario").ToUpper();
 
-                        LsStatusAprobadores.Add(ObjStatusAprobadores);
+                                    LsStatusAprobadores.Add(ObjStatusAprobadores);
+                                }
+                            }
+                        }
                     }
                 }
+
                 rs.StatusCode = HttpStatusCode.Accepted;
                 rs.Data  = LsStatusAprobadores;
 
-                connection.Close();
+            }
+            catch (HanaException ex)
+            {
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - ListadoAprobadores", strSQL + "\n" + $"Error de conexión a HANA: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("No se pudo establecer la conexión con la base de datos HANA.", ex);
             }
             catch (Exception ex)
             {
-                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Approval ListadoAprobadores DAL Vistony", ex.Message.ToString());
-                rs.StatusCode = HttpStatusCode.BadRequest;
-                rs.Data = ex.Message.ToString();
-
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - ListadoAprobadores", strSQL + "\n" + $"Ocurrió un error al ejecutar la consulta o procesar los datos: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("Ocurrió un error al ejecutar la consulta o procesar los datos.", ex);
             }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-            }
-
-
             return rs;
         }
 

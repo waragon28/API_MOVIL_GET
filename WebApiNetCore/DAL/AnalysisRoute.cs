@@ -10,103 +10,79 @@ using System.Configuration;
 using System.Data;
 using SAP_Core.Utils;
 using WebApiNetCore.DAL;
+using WebApiNetCore.Utils;
+using Sentry;
 
 namespace SAP_Core.DAL
 {
     public class AnalysisRouteDAL : Connection, IDisposable
     {
-        CorreoAlert correoAlert = new CorreoAlert();
 
         public ListAnalysisRoute GetAnalysis(string imei, string dia)
         {
-            HanaDataReader reader;
-            HanaConnection connection;
-
             ListAnalysisRoute analysisRoutess = new ListAnalysisRoute();
-
             List<AnalysisRouteBO> analysisRouteBOBOs = new List<AnalysisRouteBO>();
-
             AnalysisRouteBO analysisRouteBO;
-            string strSQL = string.Empty;
 
-            strSQL = string.Format("CALL {0}.APP_SALES_ANALYSIS_BY_ROUTE('{1}','{2}') ", DataSource.bd(), imei, dia);
+            string strSQL = string.Format("CALL {0}.APP_SALES_ANALYSIS_BY_ROUTE('{1}','{2}') ", DataSource.bd(), imei, dia);
 
-            connection = GetConnection();
             try
             {
-                if (connection.State == ConnectionState.Open)
+                using (HanaConnection connection = GetConnection())
                 {
-                    connection.Close();
-                }
-
-                connection.Open();
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
+                    connection.Open();
+                    using (HanaCommand command = new HanaCommand(strSQL, connection))
                     {
-                        analysisRouteBO = new AnalysisRouteBO();
-                        analysisRouteBO.CardCode = reader["CardCode"].ToString();
-                        analysisRouteBO.CardName = reader["CardName"].ToString();
-                        analysisRouteBO.ShipToCode = Int32.Parse(reader["ShipToCode"].ToString());
-                        analysisRouteBO.Street = reader["Street"].ToString();
-                        analysisRouteBO.TerritoryID = reader["TerritoryID"].ToString();
-                        analysisRouteBO.Territory = reader["Territory"].ToString();
-                        analysisRouteBO.Day = reader["Day"].ToString();
-                        analysisRouteBO.CommercialClass = reader["CommercialClass"].ToString();
-                        analysisRouteBO.GallonCurrentYearCurrentPeriod = Double.Parse(reader["GallonCurrentYearCurrentPeriod"].ToString());
-                        analysisRouteBO.GallonCurrentYearPreviousPeriod = Double.Parse(reader["GallonCurrentYearPreviousPeriod"].ToString());
-                        analysisRouteBO.GallonCurrentYearSecondPriorPeriod = Double.Parse(reader["GallonCurrentYearSecondPriorPeriod"].ToString());
-                        analysisRouteBO.GallonPreviousYearCurrentPeriod = Double.Parse(reader["GallonPreviousYearCurrentPeriod"].ToString());
-                        analysisRouteBO.GallonPreviousYearPreviousPeriod = Double.Parse(reader["GallonPreviousYearPreviousPeriod"].ToString());
+                        using (HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
+                        {
+                            if (reader.HasRows)
+                            {
+                                while (reader.Read())
+                                {
+                                    analysisRouteBO = new AnalysisRouteBO();
+                                    analysisRouteBO.CardCode = Other.GetStringValue(reader, "CardCode");
+                                    analysisRouteBO.CardName = Other.GetStringValue(reader, "CardName");
+                                    analysisRouteBO.ShipToCode = Other.GetIntValue(reader, "ShipToCode");
+                                    analysisRouteBO.Street = Other.GetStringValue(reader, "Street");
+                                    analysisRouteBO.TerritoryID = Other.GetStringValue(reader, "TerritoryID");
+                                    analysisRouteBO.Territory = Other.GetStringValue(reader, "Territory");
+                                    analysisRouteBO.Day = Other.GetStringValue(reader, "Day");
+                                    analysisRouteBO.CommercialClass = Other.GetStringValue(reader, "CommercialClass");
+                                    analysisRouteBO.GallonCurrentYearCurrentPeriod = Other.GetDoubleValue(reader, "GallonCurrentYearCurrentPeriod");
+                                    analysisRouteBO.GallonCurrentYearPreviousPeriod = Other.GetDoubleValue(reader, "GallonCurrentYearPreviousPeriod");
+                                    analysisRouteBO.GallonCurrentYearSecondPriorPeriod = Other.GetDoubleValue(reader, "GallonCurrentYearSecondPriorPeriod");
+                                    analysisRouteBO.GallonPreviousYearCurrentPeriod = Other.GetDoubleValue(reader, "GallonPreviousYearCurrentPeriod");
+                                    analysisRouteBO.GallonPreviousYearPreviousPeriod = Other.GetDoubleValue(reader, "GallonPreviousYearPreviousPeriod");
+                                    analysisRouteBO.GallonPreviousYearSecondPreviousPeriod = Other.GetDoubleValue(reader, "GallonPreviousYearSecondPreviousPeriod");
+                                    analysisRouteBO.AverageQuarterCurrentYear = Other.GetDoubleValue(reader, "AverageQuarterCurrentYear");
+                                    analysisRouteBO.AverageQuarterPreviousYear = Other.GetDoubleValue(reader, "AverageQuarterPreviousYear");
+                                    analysisRouteBO.Indicator1 = Other.GetDoubleValue(reader, "Indicator1");
+                                    analysisRouteBO.Indicator2 = Other.GetDoubleValue(reader, "Indicator2");
+                                    analysisRouteBO.Indicator3 = Other.GetDoubleValue(reader, "Indicator3");
+                                    analysisRouteBO.Quota = Other.GetDoubleValue(reader, "Quota");
 
-                        analysisRouteBO.GallonPreviousYearSecondPreviousPeriod = Double.Parse(reader["GallonPreviousYearSecondPreviousPeriod"].ToString());
-                        analysisRouteBO.AverageQuarterCurrentYear = Double.Parse(reader["AverageQuarterCurrentYear"].ToString());
-                        analysisRouteBO.AverageQuarterPreviousYear = Double.Parse(reader["AverageQuarterPreviousYear"].ToString());
+                                    analysisRouteBOBOs.Add(analysisRouteBO);
 
-                        analysisRouteBO.Indicator1 = Double.Parse(reader["Indicator1"].ToString());
-                        analysisRouteBO.Indicator2 = Double.Parse(reader["Indicator2"].ToString());
-                        analysisRouteBO.Indicator3 = Double.Parse(reader["Indicator3"].ToString());
-                        analysisRouteBO.Quota = Double.Parse(reader["Quota"].ToString());
-
-                        analysisRouteBOBOs.Add(analysisRouteBO);
-
+                                }
+                            }
+                            analysisRoutess.AnalysisRoutes = analysisRouteBOBOs;
+                        }
                     }
                 }
-
-                analysisRoutess.AnalysisRoutes = analysisRouteBOBOs;
-                connection.Close();
+            }
+            catch (HanaException ex)
+            {
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - GetAnalysis", strSQL + "\n" + $"Error de conexión a HANA: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("No se pudo establecer la conexión con la base de datos HANA.", ex);
             }
             catch (Exception ex)
             {
-
-                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Analysis Controller Vistony", ex.Message.ToString());
-
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-                if (connection.State != ConnectionState.Open)
-                {
-                    connection.Open();
-                }
-
-                strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Despacho_GetAnalysis - " + ex.Message + "Parametros "+ imei+ " "+ dia);
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-                connection.Close();
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - GetAnalysis", strSQL + "\n" + $"Ocurrió un error al ejecutar la consulta o procesar los datos: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("Ocurrió un error al ejecutar la consulta o procesar los datos.", ex);
             }
-            finally
-            {
-                if (connection.State==ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-            }
+
             return analysisRoutess;
         }
 

@@ -14,12 +14,13 @@ namespace WebApiNetCore.DAL
     {
         public SalesCalendars GetSalesCalendars(string imei, string fromDate, string toDate)
         {
-
-            HanaDataReader reader;
-            HanaConnection connection = GetConnection();
             List<SalesCalendarBO> listQuota = new List<SalesCalendarBO>();
             SalesCalendars quotas = new SalesCalendars();
             SalesCalendarBO quota = new SalesCalendarBO();
+
+            /*
+            HanaDataReader reader;
+            HanaConnection connection = GetConnection();
             string strSQL = string.Format("CALL {0}.APP_SALESCALENDAR ('{1}','{2}','{3}')", DataSource.bd(), imei, fromDate,toDate);
 
             try
@@ -61,6 +62,14 @@ namespace WebApiNetCore.DAL
                     connection.Close();
                 }
             }
+            */
+            quota = new SalesCalendarBO();
+            quota.Code =1;
+            quota.Year = "2024";
+            quota.Month = "11";
+            quota.Day = "18";
+            quota.Habil ="N";
+
 
             return quotas;
         }

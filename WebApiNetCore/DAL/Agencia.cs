@@ -10,72 +10,61 @@ using System.Configuration;
 using System.Data;
 using SAP_Core.Utils;
 using WebApiNetCore.DAL;
+using WebApiNetCore.Utils;
+using Sentry;
 
 namespace SAP_Core.DAL
 {
     public class AgenciaDAL : Connection, IDisposable
     {
-        CorreoAlert correoAlert = new CorreoAlert();
-
         public ListAgencia GetAgencias(string imei)
         {
-            HanaDataReader reader;
-            HanaConnection connection= GetConnection();
             List<AgenciaBO> listAgencias = new List<AgenciaBO>();
             ListAgencia agencias = new ListAgencia();
-            AgenciaBO agencia = new AgenciaBO();
             string strSQL = string.Format("CALL {0}.APP_AGENCIES ('{1}')", DataSource.bd(),imei);
+
             try
             {
-                if (connection.State== ConnectionState.Open)
+                using (HanaConnection connection = GetConnection())
                 {
-                    connection.Close();
-                }
-                connection.Open();
-                HanaCommand command = new HanaCommand(strSQL, connection);
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
+                    connection.Open();
+                    using (HanaCommand command = new HanaCommand(strSQL, connection))
                     {
-                        agencia = new AgenciaBO();
-                        agencia.AgencyID = reader["Agencia_ID"].ToString().ToUpper();
-                        agencia.Agency = reader["Agencia"].ToString().ToUpper();
-                        agencia.ZipCode = reader["Ubigeo_ID"].ToString();
-                        agencia.LicTradNum = reader["LicTradNum"].ToString();
-                        agencia.Street = reader["Street"].ToString().ToUpper();
-                        listAgencias.Add(agencia);
+                        using (HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
+                        {
+                            if (reader.HasRows)
+                            {
+                                while (reader.Read())
+                                {
+                                    AgenciaBO agencia = new AgenciaBO();
+                                    agencia.AgencyID = Other.GetStringValue(reader, "Agencia_ID");
+                                    agencia.Agency = Other.GetStringValue(reader, "Agencia");
+                                    agencia.ZipCode = Other.GetStringValue(reader, "Ubigeo_ID");
+                                    agencia.LicTradNum = Other.GetStringValue(reader, "LicTradNum");
+                                    agencia.Street = Other.GetStringValue(reader, "Street").ToUpper();
+                                    listAgencias.Add(agencia);
+                                }
+                            }
+                            agencias.Agencies = listAgencias;
+                        }
                     }
+
                 }
-                agencias.Agencies = listAgencias;
-                connection.Close();
+            }
+            catch (HanaException ex)
+            {
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - GetAgencias", strSQL + "\n" + $"Error de conexión a HANA: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("No se pudo establecer la conexión con la base de datos HANA.", ex);
             }
             catch (Exception ex)
             {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-                if (connection.State != ConnectionState.Open)
-                {
-                    connection.Open();
-                }
-
-                strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Despacho_GetAgencias - " + ex.Message);
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Agencies DAL Vistony", ex.Message.ToString());
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-                connection.Close();
-            }
-            finally
-            {
-                if (connection.State==ConnectionState.Open)
-                {
-                    connection.Close();
-                }
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - GetAgencias", strSQL + "\n" + $"Ocurrió un error al ejecutar la consulta o procesar los datos: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("Ocurrió un error al ejecutar la consulta o procesar los datos.", ex);
             }
             return agencias;
+
         }
         
         #region Disposable

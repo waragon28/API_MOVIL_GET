@@ -15,7 +15,6 @@ namespace WebApiNetCore.Controllers
     [ApiController]
     public class AgenciesController : ControllerBase
     {
-        CorreoAlert correoAlert = new CorreoAlert();
 
         [HttpGet]
         public IActionResult Get(string imei)
@@ -33,13 +32,7 @@ namespace WebApiNetCore.Controllers
             }
             catch (Exception ex)
             {
-                //Log.save(this, e.Message);
-                correoAlert.EnviarCorreoOffice365("Error API Ventas " + "Agencies Controller Vistony", ex.Message.ToString());
                 return BadRequest("No se pudo concluir la busqueda " + ex.Message.ToString());
-            }
-            finally
-            {
-
             }
         }
     }

@@ -18,6 +18,7 @@ using System.Net;
 using Newtonsoft.Json;
 using WebApiNetCore.BO;
 using System.Runtime.ConstrainedExecution;
+using Sentry;
 
 namespace SAP_Core.DAL
 {
@@ -105,16 +106,14 @@ namespace SAP_Core.DAL
                     response.Data = error;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
-            }finally
+                SentrySdk.CaptureException(ex);
+            }
+            finally
             {
                 user.LogoutServiceLayer().GetAwaiter().GetResult();
             }
-
-           
 
             return response;
         }
@@ -618,8 +617,6 @@ namespace SAP_Core.DAL
 
             return listCobranzaBO;
         }
-
-
         public ListaCobranzaD GetCollectionDeposit(string imei, string deposit)
         {
             HanaDataReader reader;

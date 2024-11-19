@@ -37,6 +37,7 @@ namespace WebApiNetCore.Controllers
 
             }
         }
+
         [HttpGet("legendColor")]
         public IActionResult GetlegendColor(string imei)
         {

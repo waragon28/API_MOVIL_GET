@@ -47,28 +47,31 @@ namespace WebApiNetCore.Utils
 
         public static string GetStringValue(HanaDataReader reader, string columnName)
         {
-            if (!ColumnExists(reader, columnName))
-                return string.Empty;
+          //  if (!ColumnExists(reader, columnName))
+              //  return string.Empty;
 
             return reader[columnName] != DBNull.Value ? reader[columnName].ToString().ToUpper() : string.Empty;
         }
 
         public static decimal GetDecimalValue(HanaDataReader reader, string columnName)
         {
-            if (!ColumnExists(reader, columnName))
-                return 0;
+            //if (!ColumnExists(reader, columnName))
+              //  return 0;
             return reader[columnName] != DBNull.Value ? Convert.ToDecimal(reader[columnName]) : 0m;
         }
         public static double GetDoubleValue(HanaDataReader reader, string columnName)
         {
-            if (!ColumnExists(reader, columnName))
-                return 0;
-            return reader[columnName] != DBNull.Value ? Convert.ToDouble(reader[columnName]) : 0;
+            //if (!ColumnExists(reader, columnName))
+            //   return 0;
+            double xd = Convert.ToDouble(reader[columnName]);
+
+            //return reader[columnName] != DBNull.Value ? Convert.ToDouble(reader[columnName]) : 0;
+            return  Convert.ToDouble(reader[columnName].ToString());
         }
         public static int GetIntValue(HanaDataReader reader, string columnName)
         {
-            if (!ColumnExists(reader, columnName))
-                return 0;
+            //if (!ColumnExists(reader, columnName))
+               // return 0;
             return reader[columnName] != DBNull.Value ? Convert.ToInt32(reader[columnName]) : 0;
         }
         public static T GetJsonValue<T>(HanaDataReader reader, string columnName) where T : class

@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<discovery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.xmlsoap.org/disco/">
-  <contractRef ref="http://169.47.196.209/WS_SINCOV_TEST/WebServiceOVSincronizacion.asmx?wsdl" docRef="http://169.47.196.209/WS_SINCOV_TEST/WebServiceOVSincronizacion.asmx" xmlns="http://schemas.xmlsoap.org/disco/scl/" />
-  <soap address="http://169.47.196.209/WS_SINCOV_TEST/WebServiceOVSincronizacion.asmx" xmlns:q1="http://localhost:6340/WebServiceGrupoPana.asmx" binding="q1:WebService_x005F_x0020_-_x005F_x0020_VISTSoap" xmlns="http://schemas.xmlsoap.org/disco/soap/" />
-  <soap address="http://169.47.196.209/WS_SINCOV_TEST/WebServiceOVSincronizacion.asmx" xmlns:q2="http://localhost:6340/WebServiceGrupoPana.asmx" binding="q2:WebService_x005F_x0020_-_x005F_x0020_VISTSoap12" xmlns="http://schemas.xmlsoap.org/disco/soap/" />
-</discovery>

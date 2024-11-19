@@ -45,7 +45,6 @@ namespace SAP_Core.DAL
    public  class ApprovalDAL : Connection,IDisposable 
     {
         private ServiceLayer serviceLayer;
-        CorreoAlert correoAlert = new CorreoAlert();
         UsuarioDAL user = new UsuarioDAL();
 
         public ApprovalDAL(IMemoryCache _memoryCache)
@@ -144,7 +143,7 @@ namespace SAP_Core.DAL
                                     approval.MargenDocumento = Other.GetDoubleValue(reader, "MargenDocumento");
                                     approval.DocEntry = Other.GetStringValue(reader, "DocEntry");
                                     approval.CantidadAnexo =Other.GetIntValue(reader, "CantidadAnexo");
-                                    approval.MargenGanancia = Other.GetIntValue(reader, "MargenDocumento");
+                                    approval.MargenGanancia = Other.GetDoubleValue(reader, "MargenDocumento");
                                     listUsuario.Add(approval);
                                 }
                             }

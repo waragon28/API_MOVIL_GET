@@ -18,7 +18,6 @@ namespace WebApiNetCore.DAL
             SalesCalendars quotas = new SalesCalendars();
             SalesCalendarBO quota = new SalesCalendarBO();
 
-            /*
             HanaDataReader reader;
             HanaConnection connection = GetConnection();
             string strSQL = string.Format("CALL {0}.APP_SALESCALENDAR ('{1}','{2}','{3}')", DataSource.bd(), imei, fromDate,toDate);
@@ -62,23 +61,17 @@ namespace WebApiNetCore.DAL
                     connection.Close();
                 }
             }
-            */
-            quota = new SalesCalendarBO();
-            quota.Code =1;
-            quota.Year = "2024";
-            quota.Month = "11";
-            quota.Day = "18";
-            quota.Habil ="N";
-
+            
 
             return quotas;
         }
         public QuotationNotifications GetQuotaNotification(GetQuotation query)
         {
-            HanaDataReader reader;
-            HanaConnection connection = GetConnection();
             QuotationNotifications quotas = new QuotationNotifications();
             QuotationNotification quota = new QuotationNotification();
+            /*
+            HanaDataReader reader;
+            HanaConnection connection = GetConnection();
             List<QuotationNotification> lquota = new List<QuotationNotification>();
             try
             {
@@ -129,7 +122,25 @@ namespace WebApiNetCore.DAL
                 {
                     connection.Close();
                 }
-            }
+            }*/
+
+            quota = new QuotationNotification();
+            quota.Object = "Prueba";
+            quota.Cliente_ID = "C999999";
+            quota.NombreCliente = "FRAN";
+            quota.RucDni = "987787878";
+            quota.DocEntry = "1";
+            quota.DocNum = "9875";
+            quota.DomEmbarque_ID = "24000";
+            quota.DomEmbarque = "24000";
+            quota.CANCELED = "N";
+            quota.MontoTotalOrden = "1500";
+            quota.EstadoAprobacion = "Y";
+            quota.OrdenVenta_ID = "240000";
+            quota.SlpCode = "254";
+            quota.PymntGroup = "contado";
+
+
             return quotas;
         }
         public Services GetService(string imei, string code)

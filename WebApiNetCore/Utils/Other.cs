@@ -50,7 +50,7 @@ namespace WebApiNetCore.Utils
           //  if (!ColumnExists(reader, columnName))
               //  return string.Empty;
 
-            return reader[columnName] != DBNull.Value ? reader[columnName].ToString().ToUpper() : string.Empty;
+            return reader[columnName] != DBNull.Value ? reader[columnName].ToString() : string.Empty;
         }
 
         public static decimal GetDecimalValue(HanaDataReader reader, string columnName)

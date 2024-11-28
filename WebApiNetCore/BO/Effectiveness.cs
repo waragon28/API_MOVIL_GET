@@ -21,6 +21,12 @@ namespace WebApiNetCore.BO
         public string CusCoverage { get; set; }
         public string Coverage { get; set; }
         public string CoverageEff { get; set; }
+
+        public string COTIZACION { get; set; }
+        public string MONTOCOTIZACION { get; set; }
+        public string TRADEMARKEGINT_ADVANCE { get; set; }
+        public string TRADEMARKEGINT_QUOTE { get; set; }
+        public string TRADEMARKEGINT_EFFECTIVENESS { get; set; }
     }
     public class ListEffectiveness
     {

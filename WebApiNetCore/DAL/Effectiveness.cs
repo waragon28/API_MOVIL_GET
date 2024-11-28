@@ -55,9 +55,9 @@ namespace WebApiNetCore.DAL
 
                         effectivenessBO.COTIZACION = reader["COTIZACION"].ToString();
                         effectivenessBO.MONTOCOTIZACION = reader["MONTOCOTIZACION"].ToString();
-                        effectivenessBO.TRADEMARKEGINT_ADVANCE = reader["TRADEMARKEGINT_ADVANCE"].ToString();
-                        effectivenessBO.TRADEMARKEGINT_QUOTE = reader["TRADEMARKEGINT_QUOTE"].ToString();
-                        effectivenessBO.TRADEMARKEGINT_EFFECTIVENESS = reader["TRADEMARKEGINT_EFFECTIVENESS"].ToString();
+                        effectivenessBO.TRADEMARKETING_ADVANCE = reader["TRADEMARKETING_ADVANCE"].ToString();
+                        effectivenessBO.TRADEMARKETING_QUOTE = reader["TRADEMARKETING_QUOTE"].ToString();
+                        effectivenessBO.TRADEMARKETING_EFFECTIVENESS = reader["TRADEMARKETING_EFFECTIVENESS"].ToString();
 
                         effectivenessBOs.Add(effectivenessBO);
 

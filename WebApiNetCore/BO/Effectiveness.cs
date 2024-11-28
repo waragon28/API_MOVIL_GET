@@ -24,9 +24,9 @@ namespace WebApiNetCore.BO
 
         public string COTIZACION { get; set; }
         public string MONTOCOTIZACION { get; set; }
-        public string TRADEMARKEGINT_ADVANCE { get; set; }
-        public string TRADEMARKEGINT_QUOTE { get; set; }
-        public string TRADEMARKEGINT_EFFECTIVENESS { get; set; }
+        public string TRADEMARKETING_ADVANCE { get; set; }
+        public string TRADEMARKETING_QUOTE { get; set; }
+        public string TRADEMARKETING_EFFECTIVENESS { get; set; }
     }
     public class ListEffectiveness
     {

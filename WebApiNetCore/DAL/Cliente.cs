@@ -321,7 +321,7 @@ namespace SAP_Core.DAL
                     U_VIS_LongitudeApp = address.Longitude,
                     U_VIS_LatitudeApp = address.Latitude,
                     U_VIS_GeolocationDate = DateTime.Now.ToString("yyyyMMdd"),
-                    U_VIS_Photo = S3_Imagen.Upload(s3Client, _bucketName, address.Photo, address.CardCode + "_" + address.AddressCode + ".png", IMAGENES.DIRECCIONES).GetAwaiter().GetResult()
+                    U_VIS_Photo = ""//S3_Imagen.Upload(s3Client, _bucketName, address.Photo, address.CardCode + "_" + address.AddressCode + ".png", IMAGENES.DIRECCIONES).GetAwaiter().GetResult()
                 };
 
                 ClienteDatos clienteDatos = new()
@@ -342,10 +342,9 @@ namespace SAP_Core.DAL
                     U_Hora = localDate.ToString("HHmm"),
                     U_mobilephone = address.mobilephone,
                     U_phone = address.phone,
-                    U_photocomprobation = S3_Imagen.Upload(s3Client, _bucketName,address.photocomprobation, "photocomprobation_" + address.CardCode + "_" + address.AddressCode + ".png", IMAGENES.COMPROBACION_DATOS_CLIENTE).GetAwaiter().GetResult() ,
+                    U_photocomprobation ="",// S3_Imagen.Upload(s3Client, _bucketName,address.photocomprobation, "photocomprobation_" + address.CardCode + "_" + address.AddressCode + ".png", IMAGENES.COMPROBACION_DATOS_CLIENTE).GetAwaiter().GetResult() ,
                     U_verificationcode = address.verificationcode,
-                    U_rubric= S3_Imagen.Upload(s3Client, _bucketName, address.rubric, "rubric_" + address.CardCode + "_" + address.AddressCode + ".png", 
-                      IMAGENES.COMPROBACION_DATOS_CLIENTE).GetAwaiter().GetResult() 
+                    U_rubric= ""//S3_Imagen.Upload(s3Client, _bucketName, address.rubric, "rubric_" + address.CardCode + "_" + address.AddressCode + ".png",  IMAGENES.COMPROBACION_DATOS_CLIENTE).GetAwaiter().GetResult() 
                 };
 
 
@@ -422,7 +421,7 @@ namespace SAP_Core.DAL
 
             IAmazonS3 s3Client = new AmazonS3Client(_awsAccessKey, _awsSecretKey, s3ClientConfig);
             fileNameAndExtension = @"SalesForceApp/Direcciones/pe/" + fileNameAndExtension;
-            string text = S3_Imagen.getUrlImage(s3Client, _bucketName, fileNameAndExtension);
+            string text = "";// S3_Imagen.getUrlImage(s3Client, _bucketName, fileNameAndExtension);
             return text;
         }
 
@@ -435,7 +434,7 @@ namespace SAP_Core.DAL
 
             IAmazonS3 s3Client = new AmazonS3Client(_awsAccessKey, _awsSecretKey, s3ClientConfig);
             fileNameAndExtension = @"SalesForceApp/ComprobacionDatosCliente/" + fileNameAndExtension;
-            string text = S3_Imagen.getUrlImage(s3Client, _bucketName, fileNameAndExtension);
+            string text = "";//S3_Imagen.getUrlImage(s3Client, _bucketName, fileNameAndExtension);
             return text;
         }
 

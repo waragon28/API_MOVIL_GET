@@ -47,7 +47,7 @@ namespace WebApiNetCore.DAL
 
             IAmazonS3 s3Client = new AmazonS3Client(_awsAccessKey, _awsSecretKey, s3ClientConfig);
             fileNameAndExtension = @"SalesForceApp/Compras/VISTONY/" + fileNameAndExtension;
-            string text = S3_Imagen.getUrlImage2(s3Client, _bucketName, fileNameAndExtension);
+            string text = "";// S3_Imagen.getUrlImage2(s3Client, _bucketName, fileNameAndExtension);
             return text;
         }
 

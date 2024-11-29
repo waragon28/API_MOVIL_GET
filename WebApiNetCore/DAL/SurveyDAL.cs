@@ -179,7 +179,7 @@ namespace WebApiNetCore.DAL
                                     }
                                     else
                                     {
-                                        U_Foto = S3_Imagen.Upload(s3Client, _bucketName, Form.Base64, U_FotoUrl.Replace(" ","_"), IMAGENES.TRADE_MARKETING).GetAwaiter().GetResult();
+                                        U_Foto = "";// S3_Imagen.Upload(s3Client, _bucketName, Form.Base64, U_FotoUrl.Replace(" ","_"), IMAGENES.TRADE_MARKETING).GetAwaiter().GetResult();
                                     }
 
                                     foreach (var Pregunta in Form.Preguntas)
@@ -194,7 +194,7 @@ namespace WebApiNetCore.DAL
                                         }
                                         else
                                         {
-                                            U_Foto_Pregunta = S3_Imagen.Upload(s3Client, _bucketName, Pregunta.Base64, U_Foto_Url_Pregunta.Replace(" ", "_"), IMAGENES.TRADE_MARKETING).GetAwaiter().GetResult();
+                                            U_Foto_Pregunta = "";// S3_Imagen.Upload(s3Client, _bucketName, Pregunta.Base64, U_Foto_Url_Pregunta.Replace(" ", "_"), IMAGENES.TRADE_MARKETING).GetAwaiter().GetResult();
                                         }
 
                                         foreach (var Respuesta in Pregunta.Respuestas)
@@ -290,7 +290,7 @@ namespace WebApiNetCore.DAL
 
             IAmazonS3 s3Client = new AmazonS3Client(_awsAccessKey, _awsSecretKey, s3ClientConfig);
             fileNameAndExtension = @"SalesForceApp/TradeMarketing/"+ fileNameAndExtension;
-            string text = S3_Imagen.getUrlImage(s3Client, _bucketName, fileNameAndExtension);
+            string text = "";// S3_Imagen.getUrlImage(s3Client, _bucketName, fileNameAndExtension);
             return text;
         }
 

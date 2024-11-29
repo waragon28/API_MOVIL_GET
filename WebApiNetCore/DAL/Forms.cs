@@ -235,7 +235,7 @@ namespace WebApiNetCore.DAL
                 foreach (GalleryList item in data.galeria)
                 {
                     GalleryCollection gc = new GalleryCollection();
-                    gc.U_VIS_Photo = S3_Imagen.Upload(s3Client, _bucketName, item.base64, form.U_VIS_SlpCodeSupervisor + "_"+ form.U_VIS_SlpCodeSeller +"_"+ form.U_VIS_Date+"_"+i+ ".png", IMAGENES.SUPERVISORES).GetAwaiter().GetResult();
+                    gc.U_VIS_Photo = "";//S3_Imagen.Upload(s3Client, _bucketName, item.base64, form.U_VIS_SlpCodeSupervisor + "_"+ form.U_VIS_SlpCodeSeller +"_"+ form.U_VIS_Date+"_"+i+ ".png", IMAGENES.SUPERVISORES).GetAwaiter().GetResult();
                     i++;
                     lgc.Add(gc);
                 }
@@ -300,7 +300,7 @@ namespace WebApiNetCore.DAL
 
             IAmazonS3 s3Client = new AmazonS3Client(_awsAccessKey, _awsSecretKey, s3ClientConfig);
             fileNameAndExtension = @"SalesForceApp/Supervisores/" + fileNameAndExtension;
-            string text = S3_Imagen.getUrlImage(s3Client, _bucketName, fileNameAndExtension);
+            string text = "";// S3_Imagen.getUrlImage(s3Client, _bucketName, fileNameAndExtension);
             return text;
         }
         #region Disposable

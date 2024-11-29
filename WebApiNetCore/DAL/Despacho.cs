@@ -65,7 +65,7 @@ namespace SAP_Core.DAL
 
             IAmazonS3 s3Client = new AmazonS3Client(_awsAccessKey, _awsSecretKey, s3ClientConfig);
             fileNameAndExtension = @"SalesForceApp/Deposito/" + fileNameAndExtension;
-            string text = S3_Imagen.getUrlImage2(s3Client, _bucketName, fileNameAndExtension);
+            string text = "";// S3_Imagen.getUrlImage2(s3Client, _bucketName, fileNameAndExtension);
             return text;
         }
         public ListaDespachoHeaderBO GetDespachoHeader(string imei, string fecha)
@@ -248,7 +248,7 @@ namespace SAP_Core.DAL
 
             IAmazonS3 s3Client = new AmazonS3Client(_awsAccessKey, _awsSecretKey, s3ClientConfig);
             fileNameAndExtension = @"SalesForceApp/Distribucion/" + fileNameAndExtension;
-            string text = S3_Imagen.getUrlImage(s3Client, _bucketName, fileNameAndExtension);
+            string text = "";// S3_Imagen.getUrlImage(s3Client, _bucketName, fileNameAndExtension);
             return text;
         }
 
@@ -739,8 +739,8 @@ namespace SAP_Core.DAL
                     U_CheckInTime = d.CheckInTime,
                     U_CheckOutTime = d.CheckOutTime,
 
-                    U_PhotoDocument = S3_Imagen.Upload(s3Client, _bucketName, d.PhotoDocument, dispatch.DocEntry + "_" + d.LineId + "_Document.png", IMAGENES.DISTRIBUCIÓN).GetAwaiter().GetResult(),
-                    U_PhotoStore = S3_Imagen.Upload(s3Client, _bucketName, d.PhotoStore, dispatch.DocEntry + "_" + d.LineId + "_Store.png", IMAGENES.DISTRIBUCIÓN).GetAwaiter().GetResult(),
+                    U_PhotoDocument = "",//S3_Imagen.Upload(s3Client, _bucketName, d.PhotoDocument, dispatch.DocEntry + "_" + d.LineId + "_Document.png", IMAGENES.DISTRIBUCIÓN).GetAwaiter().GetResult(),
+                    U_PhotoStore = "",//S3_Imagen.Upload(s3Client, _bucketName, d.PhotoStore, dispatch.DocEntry + "_" + d.LineId + "_Store.png", IMAGENES.DISTRIBUCIÓN).GetAwaiter().GetResult(),
 
                     U_PersonContact = d.PersonContact,
                     U_ReturnReason = d.ReturnReason,

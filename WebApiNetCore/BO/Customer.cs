@@ -166,4 +166,77 @@ namespace SAP_Core.BO
     {
         public List<ValidateCredit> listValidate { get; set; }
     }
+
+
+    public class BPAddress
+    {
+        public string AddressName { get; set; }
+        public string Street { get; set; }
+        public string Block { get; set; }
+        public string ZipCode { get; set; }
+        public string City { get; set; }
+        public string County { get; set; }
+        public string Country { get; set; }
+        public string AddressType { get; set; }
+        public string U_VIS_TerritoryID { get; set; } = "Z005";
+        public string U_VIS_VisitOrder { get; set; } = "1";
+        public string U_VIS_SlpCode { get; set; }
+        public string U_VIS_SlpName { get; set; }
+        //public string U_VIS_LongitudeApp { get; set; } = "0";
+        // public string U_VIS_LatitudeApp { get; set; } = "0";
+        public int U_VIS_DeliveryDay { get; set; }
+    }
+
+    public class ContactEmployee
+    {
+        public string Name { get; set; }
+        public object Address { get; set; }
+        public object Phone1 { get; set; }
+        public object Phone2 { get; set; }
+        public object MobilePhone { get; set; }
+        public string E_Mail { get; set; }
+        public string Active { get; set; }
+        public string FirstName { get; set; }
+        public object MiddleName { get; set; }
+        public object LastName { get; set; }
+    }
+
+    public class CustomerCreate
+    {
+        public string CardCode { get; set; }
+        public string CardName { get; set; }
+        public string CardType { get; set; }
+        public int GroupCode { get; set; }
+        public int PayTermsGrpCode { get; set; }
+        public string FederalTaxID { get; set; }
+        public string Currency { get; set; }
+        public string EmailAddress { get; set; }
+        public string U_SYP_BPAP { get; set; }
+        public string U_SYP_BPAM { get; set; }
+        public string U_SYP_BPNO { get; set; }
+        public string U_SYP_BPN2 { get; set; }
+        public string U_SYP_BPTP { get; set; }
+        public string U_SYP_BPTD { get; set; }
+        public string U_SYP_PLVAR { get; set; }
+        public string U_SYP_DOCMAS { get; set; }
+        public string U_SYP_CATCLI { get; set; }
+        public string U_EconomyActivity { get; set; }
+
+        public string Phone1 { get; set; }
+        public string Phone2 { get; set; }
+
+        //public double U_SF_LinieaCredSolic { get; set; }
+        //public string U_SF_CondicionPago { get; set; }
+        //public string U_SF_StatusMigration { get; set; }
+       // public string U_U_SF_Cod { get; set; }
+        public string U_VIS_SaleCategory { get; set; }
+        public string U_VIS_Category { get; set; }
+        // public string PriceListNum { get; set; }
+
+
+
+        public List<BPAddress> BPAddresses { get; set; }
+        public List<ContactEmployee> ContactEmployees { get; set; }
+    }
+
 }

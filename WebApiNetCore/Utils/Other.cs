@@ -10,12 +10,31 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace WebApiNetCore.Utils
 {
     public class Other
     {
+        public class LoginRequest
+        {
+            [JsonPropertyName("CompanyDB")]
+            public string CompanyDB { get; set; }
+            [JsonPropertyName("Password")]
+            public string Password { get; set; }
+            [JsonPropertyName("UserName")]
+            public string UserName { get; set; }
+        }
+
+        public class Response
+        {
+            public HttpStatusCode statusCode { get; set; }
+#pragma warning disable CS8618 // Un campo que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de declararlo como que admite un valor NULL.
+            public dynamic data { get; set; }
+#pragma warning restore CS8618 // Un campo que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de declararlo como que admite un valor NULL.
+        }
+
         public static string sqlDatoToJson(HanaDataReader dataReader)
         {
             var dataTable = new DataTable();
@@ -50,7 +69,7 @@ namespace WebApiNetCore.Utils
           //  if (!ColumnExists(reader, columnName))
               //  return string.Empty;
 
-            return reader[columnName] != DBNull.Value ? reader[columnName].ToString().ToUpper() : string.Empty;
+            return reader[columnName] != DBNull.Value ? reader[columnName].ToString() : string.Empty;
         }
 
         public static decimal GetDecimalValue(HanaDataReader reader, string columnName)

@@ -52,6 +52,13 @@ namespace WebApiNetCore.DAL
                         effectivenessBO.CusCoverage = reader["CLIENTECOBERTURA"].ToString();
                         effectivenessBO.Coverage = reader["COBERTURA"].ToString();
                         effectivenessBO.CoverageEff = reader["EFECTIVIDAD_COBERTURA"].ToString();
+
+                        effectivenessBO.COTIZACION = reader["COTIZACION"].ToString();
+                        effectivenessBO.MONTOCOTIZACION = reader["MONTOCOTIZACION"].ToString();
+                        effectivenessBO.TRADEMARKETING_ADVANCE = reader["TRADEMARKETING_ADVANCE"].ToString();
+                        effectivenessBO.TRADEMARKETING_QUOTE = reader["TRADEMARKETING_QUOTE"].ToString();
+                        effectivenessBO.TRADEMARKETING_EFFECTIVENESS = reader["TRADEMARKETING_EFFECTIVENESS"].ToString();
+
                         effectivenessBOs.Add(effectivenessBO);
 
                     }

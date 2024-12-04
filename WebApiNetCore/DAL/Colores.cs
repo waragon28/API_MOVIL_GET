@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using Sap.Data.Hana;
 using SAP_Core.BO;
 using SAP_Core.Utils;
+using Sentry;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -12,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using WebApiNetCore.Utils;
 
 namespace SAP_Core.DAL
 {
@@ -20,8 +22,6 @@ namespace SAP_Core.DAL
 
         public ListaColores GetColores (string imei)
         {
-            HanaDataReader reader;
-            HanaConnection connection= GetConnection();
             ListaColores colores = new ListaColores();
             List<ColorHeaderBO> listColores = new List<ColorHeaderBO>();
             ColorHeaderBO color = new ColorHeaderBO();
@@ -29,65 +29,50 @@ namespace SAP_Core.DAL
 
             try{
 
-                if (connection.State == ConnectionState.Open)
+                using (HanaConnection connection = GetConnection())
                 {
-                    connection.Close();
+                    connection.Open();
+                    using (HanaCommand command = new HanaCommand(strSQL, connection))
+                    {
+                        using (HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
+                        {
+                            if (reader.HasRows)
+                            {
+                                while (reader.Read())
+                                {
+                                    color = new ColorHeaderBO();
+                                    color.Code = Other.GetStringValue(reader, "Code");
+                                    color.Description = Other.GetStringValue(reader, "Dscription");
+                                    color.Status = Other.GetStringValue(reader, "Status");
+                                    color.Detail = Other.GetJsonValue<List<ColorsDetailBO>>(reader,"Detail");
+                                    listColores.Add(color);
+                                }
+                            }
+                        }
+                    }
                 }
 
-                connection.Open();
-            HanaCommand command = new HanaCommand(strSQL, connection);
-
-            reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-
-
-            if (reader.HasRows)
-            {
-                while (reader.Read())
-                {
-                    color = new ColorHeaderBO();
-                    color.Code = reader["Code"].ToString();
-                    color.Description = reader["Dscription"].ToString();
-                    color.Status = reader["Status"].ToString();
-                    color.Detail = reader["Detail"] == null ? null : JsonConvert.DeserializeObject<List<ColorsDetailBO>>(reader["Detail"].ToString());
-                    listColores.Add(color);
-                }
-            }
             colores.Colors = listColores;
-            connection.Close();
+
+            }
+            catch (HanaException ex)
+            {
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - GetColores", strSQL + "\n" + $"Error de conexión a HANA: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("No se pudo establecer la conexión con la base de datos HANA.", ex);
             }
             catch (Exception ex)
             {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-                if (connection.State != ConnectionState.Open)
-                {
-                    connection.Open();
-                }
-
-                strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Despacho_GetColores - " + ex.Message + " "+ imei);
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-                connection.Close();
-            }
-            finally
-            {
-                if (connection.State==ConnectionState.Open)
-                {
-                    connection.Close();
-                }
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - GetColores", strSQL + "\n" + $"Ocurrió un error al ejecutar la consulta o procesar los datos: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("Ocurrió un error al ejecutar la consulta o procesar los datos.", ex);
             }
 
             return colores;
         }
 
-
         public ListColorRange GetlegendColor(string imei)
         {
-            HanaDataReader reader;
-            HanaConnection connection = GetConnection();
             ColorRange colores = new ColorRange();
             ListColorRange listColorRange = new ListColorRange();
 
@@ -96,62 +81,46 @@ namespace SAP_Core.DAL
 
             try
             {
-
-                if (connection.State == ConnectionState.Open)
+                using (HanaConnection connection = GetConnection())
                 {
-                    connection.Close();
-                }
-
-                connection.Open();
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-
-
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
+                    connection.Open();
+                    using (HanaCommand command = new HanaCommand(strSQL, connection))
                     {
-                        colores = new ColorRange();
-                        colores.Range = reader["Range"].ToString();
-                        colores.Color = reader["Color"].ToString();
-                        colores.Description = reader["Description"].ToString();
-                        Lcolores.Add(colores);
-                    }
+                        using (HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
+                        {
+                            if (reader.HasRows)
+                            {
+                                while (reader.Read())
+                                {
+                                    colores = new ColorRange();
+                                    colores.Range = Other.GetStringValue(reader, "Range");
+                                    colores.Color = Other.GetStringValue(reader, "Color");
+                                    colores.Description = Other.GetStringValue(reader, "Description");
+                                    Lcolores.Add(colores);
+                                }
 
+                            }
+                        }
+                    }
                 }
                 listColorRange.ColorRange = Lcolores;
-                connection.Close();
+
+            }
+            catch (HanaException ex)
+            {
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - GetlegendColor", strSQL + "\n" + $"Error de conexión a HANA: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("No se pudo establecer la conexión con la base de datos HANA.", ex);
             }
             catch (Exception ex)
             {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-                if (connection.State != ConnectionState.Open)
-                {
-                    connection.Open();
-                }
-
-                strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Despacho_GetColores - " + ex.Message + " " + imei);
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-                connection.Close();
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - GetlegendColor", strSQL + "\n" + $"Ocurrió un error al ejecutar la consulta o procesar los datos: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("Ocurrió un error al ejecutar la consulta o procesar los datos.", ex);
             }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-            }
-
             return listColorRange;
         }
 
-        
         public string ColorMargen(double Margen)
         {
             string HexadecimalColor = string.Empty;
@@ -180,49 +149,43 @@ namespace SAP_Core.DAL
 
         public double CostoProducto(string ItemCode,string Almacen) {
 
-            HanaDataReader reader;
-            HanaConnection connection = GetConnection();
             string strSQL =string.Format("SELECT T0.\"AvgPrice\" FROM {0}.OITW T0 " +
                                          "WHERE T0.\"ItemCode\"='{1}' AND T0.\"WhsCode\"='{2}' ", DataSource.bd(),ItemCode,Almacen);
             double Costo = 0;
             try
             {
 
-                if (connection.State == ConnectionState.Open)
+
+                using (HanaConnection connection = GetConnection())
                 {
-                    connection.Close();
-                }
-
-                connection.Open();
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-
-
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
+                    connection.Open();
+                    using (HanaCommand command = new HanaCommand(strSQL, connection))
                     {
-                        Costo= Convert.ToDouble(reader["AvgPrice"].ToString());
-                       
+                        using (HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
+                        {
+                            if (reader.HasRows)
+                            {
+                                while (reader.Read())
+                                {
+                                    Costo = Other.GetDoubleValue(reader, "AvgPrice");
+
+                                }
+                            }
+                        }
                     }
                 }
-                connection.Close();
+            }
+            catch (HanaException ex)
+            {
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - CostoProducto", strSQL + "\n" + $"Error de conexión a HANA: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("No se pudo establecer la conexión con la base de datos HANA.", ex);
             }
             catch (Exception ex)
             {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-
-            }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - CostoProducto", strSQL + "\n" + $"Ocurrió un error al ejecutar la consulta o procesar los datos: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("Ocurrió un error al ejecutar la consulta o procesar los datos.", ex);
             }
 
             return Costo;

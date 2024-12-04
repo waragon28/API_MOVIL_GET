@@ -27,7 +27,7 @@ namespace SAP_Core.BO
         public double MargenDocumento { get; set; }
         public string DocEntry { get; set; }
         public int CantidadAnexo { get; set; }
-        public int MargenGanancia { get; set; }
+        public double MargenGanancia { get; set; }
     }
 
     public class OPriceHistoy
@@ -218,6 +218,14 @@ namespace SAP_Core.BO
     public class ListApprovalBo
     {
         public List<ApprovalBo> Data { get; set; }
+    }
+
+    public class ListStatusAprobadores
+    {
+        public string Aprobador { get; set; }
+        public string Estado { get; set; }
+        public string Comentario { get; set; }
+        
     }
 
 

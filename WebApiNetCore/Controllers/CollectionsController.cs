@@ -25,7 +25,7 @@ namespace WebApiNetCore.Controllers
         {
             _memoryCache = memoryCache;
         }
-        // GET: api/<CollectionsController>
+
         [HttpGet("Date/")]
         public IActionResult Get(string imei, string fecha)
         {

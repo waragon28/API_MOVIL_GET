@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations;
 
 namespace SAP_Core.BO
 {
@@ -16,7 +15,6 @@ namespace SAP_Core.BO
     }
     public  class UsuarioBO 
     {
-        [Required]
         public string Imei { get; set; }
         public string CompanyCode { get; set; }
         public string CompanyName { get; set; }
@@ -37,9 +35,10 @@ namespace SAP_Core.BO
         public string ProductionLine { get; set; }
         
         
-    }// fin de la clase
+    }
     public class ListUsuario
     {
         public List<UsuarioBO> Users { get; set; }
     }
+
 }

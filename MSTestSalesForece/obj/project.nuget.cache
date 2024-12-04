@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "4gLfJAo8RP8=",
+  "dgSpecHash": "COp84TU0InPc/rVdJGHjo6gDwowMG3iYNy/10djm4tdVGXzL4VitqS4cLOL1ofU80fY1RWh9+/wkd6kzNE0yHQ==",
   "success": true,
-  "projectFilePath": "E:\\Desarrollo\\API\\App_Movil\\API_Mobil_Get\\MSTestSalesForece\\MSTestSalesForece.csproj",
+  "projectFilePath": "C:\\Users\\waragon\\Desktop\\API_Mobil_Get\\MSTestSalesForece\\MSTestSalesForece.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\waragon\\.nuget\\packages\\awssdk.core\\3.7.2.5\\awssdk.core.3.7.2.5.nupkg.sha512",
     "C:\\Users\\waragon\\.nuget\\packages\\awssdk.s3\\3.7.1.25\\awssdk.s3.3.7.1.25.nupkg.sha512",

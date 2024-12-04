@@ -14,7 +14,8 @@ using System.Linq;
 using System.Net.Http.Headers;
 using static WebApiNetCore.Utils.Other;
 using Sentry;
-
+using SAP_Core.DAL;
+using Newtonsoft.Json;
 
 namespace SalesForce.Util
 {
@@ -24,10 +25,86 @@ namespace SalesForce.Util
         private static readonly string UriServiceLayer = Startup.Configuration.GetValue<string>("ServiceLayer:PathUri");
         private static readonly double MinuteCacheServer = Startup.Configuration.GetValue<double>("ServiceLayer:MinuteCacheServer");
 
+        UsuarioDAL user = new UsuarioDAL();
+
         public ServiceLayer(IMemoryCache _memoryCache)
         {
             memoryCache = _memoryCache;
         }
+
+        public Response PostWithToken(string url, string token, string Json)
+        {
+            Response rs = new();
+            string Respuesta = string.Empty;
+            var baseAddress = new Uri(url);
+
+            var cookieContainer = new CookieContainer();
+            HttpClientHandler clientHandler = new HttpClientHandler
+            {
+                CookieContainer = cookieContainer,
+                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+            };
+
+            HttpClient client = new HttpClient(clientHandler)
+            {
+                BaseAddress = baseAddress
+            };
+            client.DefaultRequestHeaders.Add("Prefer", "odata.maxpagesize=2000");
+            cookieContainer.Add(baseAddress, new Cookie("B1SESSION", token));
+
+            StringContent content = new StringContent(Json, Encoding.UTF8, "application/json");
+
+            // Enviar la solicitud POST
+            HttpResponseMessage response = client.PostAsync(url, content).Result;
+
+            // Manejo de la respuesta
+            if (response.IsSuccessStatusCode)
+            {
+                string responseBody = response.Content.ReadAsStringAsync().Result;
+                rs.statusCode = response.StatusCode;
+                rs.data = responseBody;
+            }
+            else
+            {
+                string responseBody = response.Content.ReadAsStringAsync().Result;
+                rs.statusCode = response.StatusCode;
+                var jsonResponse = JsonConvert.SerializeObject(responseBody);
+                // Deserializar el JSON a un objeto dinámico
+                var jsonObject = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
+                // Deserializar el JSON a un objeto dinámico
+                dynamic jsonObject1 = JsonConvert.DeserializeObject<dynamic>(jsonObject);
+
+                // Acceder al valor de la propiedad "value"
+                string value = jsonObject1.error.message.value;
+
+                // Deserializar la respuesta JSON a un objeto dinámico
+                rs.statusCode = HttpStatusCode.BadRequest;
+                rs.data = value;
+
+            }
+            return rs;
+        }
+
+        public static HttpResponseMessage SendLoginRequest(string url, LoginRequest loginRequest)
+        {
+            // Ignorar validación de certificado SSL (solo para pruebas)
+            HttpClientHandler handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
+            };
+
+            using (HttpClient client = new HttpClient(handler))
+            {
+                // Serializar el objeto a JSON
+                string json = JsonConvert.SerializeObject(loginRequest);
+                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                // Enviar la solicitud POST
+                HttpResponseMessage response = client.PostAsync(url, content).Result;
+                return response;
+            }
+        }
+
 
         string cookieKey;
         public async Task<ResponseData> Request(string endPoint, Method method, string jsonBody="", string sessionId="")
@@ -47,20 +124,20 @@ namespace SalesForce.Util
 
                 HttpClient cliente = new(clientHandler)
                 {
-                    BaseAddress = baseAddress                       
+                    BaseAddress = baseAddress
                 };
 
 
-                
+
 
                 cliente.DefaultRequestHeaders.Add("Prefer", "odata.maxpagesize=2000");
 
-              
+
                 var temp = memoryCache.Get("PE-CountLogin") as string;
 
-                if (sessionId!="")
+                if (sessionId != "")
                 {
-                    
+
                     cookieKey = sessionId;
                 }
                 else
@@ -73,8 +150,8 @@ namespace SalesForce.Util
                     };
 
                     LoginSAP.Login(0, memoryCache, credenciales, ref cookieKey);
-                     
-                   // cookieKey = sessionId;
+
+                    // cookieKey = sessionId;
                 }
 
                 int count = int.Parse(temp ?? "0");
@@ -82,7 +159,7 @@ namespace SalesForce.Util
                 cookieContainer.Add(baseAddress, new Cookie("B1SESSION", cookieKey));
                 count++;
 
-                var respuesta = (dynamic) null;
+                var respuesta = (dynamic)null;
                 StringContent jsonContent = new(jsonBody, Encoding.UTF8, "application/json");
 
                 switch (method)
@@ -91,17 +168,18 @@ namespace SalesForce.Util
                         respuesta = await cliente.GetAsync(endPoint);
                         break;
                     case Method.POST:
-                         respuesta = await cliente.PostAsync(endPoint, jsonContent);
+                        respuesta = await cliente.PostAsync(endPoint, jsonContent);
                         break;
                     case Method.PATCH:
-                         respuesta = await cliente.PatchAsync(endPoint, jsonContent);
+                        respuesta = await cliente.PatchAsync(endPoint, jsonContent);
                         break;
                     case Method.DELETE:
-                         respuesta = await cliente.DeleteAsync(endPoint);
+                        respuesta = await cliente.DeleteAsync(endPoint);
                         break;
                 }
-                
-                if (respuesta.StatusCode == HttpStatusCode.Unauthorized){
+
+                if (respuesta.StatusCode == HttpStatusCode.Unauthorized)
+                {
                     if (count > 2)
                     {
                         response.StatusCode = HttpStatusCode.Unauthorized;
@@ -112,8 +190,10 @@ namespace SalesForce.Util
                     else
                     {
                     }
-                }else{
-                   
+                }
+                else
+                {
+
                     response.StatusCode = respuesta.StatusCode;
                     response.Data = respuesta;
 
@@ -121,9 +201,16 @@ namespace SalesForce.Util
 
                 }
 
-            }catch (Exception ex){
+            }
+            catch (Exception ex)
+            {
                 response.StatusCode = HttpStatusCode.InternalServerError;
                 response.Data = ex.Message;
+            }
+
+            finally
+            {
+               
             }
 
             return response;
@@ -204,6 +291,10 @@ namespace SalesForce.Util
             {
                 response.StatusCode = HttpStatusCode.InternalServerError;
                 response.Data = ex.Message;
+            }
+            finally
+            {
+                
             }
 
             return response;

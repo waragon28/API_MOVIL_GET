@@ -9,6 +9,9 @@ using Sap.Data.Hana;
 using System.Configuration;
 using System.Data;
 using SAP_Core.Utils;
+using WebApiNetCore.DAL;
+using WebApiNetCore.Utils;
+using Sentry;
 
 namespace SAP_Core.DAL
 {
@@ -17,8 +20,6 @@ namespace SAP_Core.DAL
 
         public ListaBanco GetBanco(string imei)
         {
-            HanaDataReader reader;
-            HanaConnection connection= GetConnection();
             ListaBanco bancos = new ListaBanco();
             List<BancoBO> listBancoBO = new List<BancoBO>();
             BancoBO banco = null;
@@ -27,58 +28,48 @@ namespace SAP_Core.DAL
 
             try
             {
-                if (connection.State == ConnectionState.Open)
+                using (HanaConnection connection = GetConnection())
                 {
-                    connection.Close();
-                }
-
-                connection.Open();
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
+                    connection.Open();
+                    using (HanaCommand command = new HanaCommand(strSQL, connection))
                     {
-                        banco = new BancoBO();
-                        banco.BankId = reader["BankID"].ToString();
-                        banco.BankName = reader["Name"].ToString().ToUpper();
-                        banco.SingleDeposit = reader["UniqueDeposit"].ToString();
-                        banco.Post = reader["POS"].ToString();
-                        listBancoBO.Add(banco);
+                        using (HanaDataReader reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
+                        {
+                            if (reader.HasRows)
+                            {
+                                while (reader.Read())
+                                {
+                                    banco = new BancoBO();
+                                    banco.BankId =Other.GetStringValue(reader, "BankID");
+                                    banco.BankName = Other.GetStringValue(reader, "Name").ToUpper();
+                                    banco.SingleDeposit = Other.GetStringValue(reader, "UniqueDeposit");
+                                    banco.Post = Other.GetStringValue(reader, "POS");
+                                    listBancoBO.Add(banco);
+                                }
+                            }
+                        }
                     }
                 }
+
                 bancos.Banks = listBancoBO;
-                connection.Close();
+            }
+            catch (HanaException ex)
+            {
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - GetBanco", strSQL + "\n" + $"Error de conexión a HANA: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("No se pudo establecer la conexión con la base de datos HANA.", ex);
             }
             catch (Exception ex)
             {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-                if (connection.State != ConnectionState.Open)
-                {
-                    connection.Open();
-                }
-
-                strSQL = string.Format("CALL {0}.ins_msg_proc('{1}','{2}','{3}')", DataSource.bd(), "APP Sales Force GET", "Error", "Despacho_GetBanco - " + ex.Message+ " - "+imei);
-                HanaCommand command = new HanaCommand(strSQL, connection);
-
-                reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-                connection.Close();
-            }
-            finally
-            {
-                if (connection.State==ConnectionState.Open)
-                {
-                    connection.Close();
-                }
+                Other.EnviarCorreoOffice365(DataSource.bd() + " Error - APP Movil - GetBanco", strSQL + "\n" + $"Ocurrió un error al ejecutar la consulta o procesar los datos: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+                throw new Exception("Ocurrió un error al ejecutar la consulta o procesar los datos.", ex);
             }
 
             return bancos;
         }
+
+
         #region Disposable
 
 

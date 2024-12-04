@@ -29,8 +29,6 @@ namespace WebApiNetCore.Controllers
         {
             try
             {
-               // Get_Documents
-
                 ApprovalDAL approvalDAL = new(_memoryCache);
                 ListApprovalBo approvalList = approvalDAL.Get_Documents(user, status);
 
@@ -38,8 +36,6 @@ namespace WebApiNetCore.Controllers
             }
             catch (Exception e)
             {
-
-                SentrySdk.CaptureException(e);
                 return BadRequest("No se pudo concluir la busqueda");
             }
         }
@@ -49,8 +45,6 @@ namespace WebApiNetCore.Controllers
         {
             try
             {
-               // Get_Documents
-
                 ApprovalDAL approvalDAL = new(_memoryCache);
                 ListDeudaBo listDeudaBo = approvalDAL.Get_Deuda(cardCode);
 
@@ -58,7 +52,6 @@ namespace WebApiNetCore.Controllers
             }
             catch (Exception e)
             {
-                SentrySdk.CaptureException(e);
                 return BadRequest("No se pudo concluir la busqueda");
             }
         }
@@ -75,7 +68,6 @@ namespace WebApiNetCore.Controllers
             }
             catch (Exception e)
             {
-                SentrySdk.CaptureException(e);
                 return BadRequest("No se pudo concluir la busqueda");
             }
         }
@@ -92,7 +84,6 @@ namespace WebApiNetCore.Controllers
             }
             catch (Exception e)
             {
-                SentrySdk.CaptureException(e);
                 return BadRequest("No se pudo concluir la busqueda");
             }
         }
@@ -109,7 +100,6 @@ namespace WebApiNetCore.Controllers
             }
             catch (Exception e)
             {
-                SentrySdk.CaptureException(e);
                 return BadRequest("No se pudo concluir la busqueda");
             }
         }
@@ -126,7 +116,6 @@ namespace WebApiNetCore.Controllers
             }
             catch (Exception e)
             {
-                SentrySdk.CaptureException(e);
                 return BadRequest("No se pudo concluir la busqueda");
             }
         }
@@ -144,7 +133,6 @@ namespace WebApiNetCore.Controllers
             }
             catch (Exception e)
             {
-                SentrySdk.CaptureException(e);
                 return BadRequest("No se pudo concluir la busqueda");
             }
 
@@ -161,6 +149,18 @@ namespace WebApiNetCore.Controllers
 
             return Ok(response);
             
+        }
+
+        [HttpGet("ListadoAprobadores")]
+
+        public IActionResult ListadoAprobadores([FromQuery] string docEntry)
+        {
+
+            ApprovalDAL approvalDAL = new(_memoryCache);
+
+            ResponseData response = approvalDAL.ListadoAprobadores(docEntry);
+
+            return Ok(response);
         }
 
         [HttpPost("Documentos")]
@@ -185,7 +185,6 @@ namespace WebApiNetCore.Controllers
             }
             catch (Exception e)
             {
-                SentrySdk.CaptureException(e);
                 return BadRequest("No se pudo concluir la busqueda");
             }
 

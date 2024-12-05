@@ -211,7 +211,7 @@ namespace SAP_Core.DAL
                             g.First().ItemCode,
                             g.First().WarehouseCode); // Obtener el precio promedio
 
-                    double vatPrcnt = g.First().TaxCode == "IGV" ? 18 : 0;
+                    double vatPrcnt = g.First().TaxCode == "IVA_15" ? 15 : 0;
 
                         double resultado = Math.Round(
                             (lineTotal - (totalQuantity * avgPrice)) /

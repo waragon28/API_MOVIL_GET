@@ -124,25 +124,17 @@ namespace SAP_Core.DAL
         public string ColorMargen(double Margen)
         {
             string HexadecimalColor = string.Empty;
-            if (Margen <= 24.99)
+            if (Margen < 20)
             {
                 HexadecimalColor = "#FF0000"; //ROJO
             }
-            else if (Margen >= 30  && Margen <= 34.99)
+            else if (Margen >= 20  && Margen <= 25)
             {
                 HexadecimalColor = "#FFA500"; //NARANJA
             }
-            else if (Margen >= 35 && Margen <= 39.99)
-            {
-                HexadecimalColor = "#FFFF00"; //AMARILLO
-            }
-            else if (Margen >= 35 && Margen <= 39.99)
-            {
-                HexadecimalColor = "#00FF00"; //VERDE
-            }
             else
             {
-                HexadecimalColor = "#0000FF"; //AZUL
+                HexadecimalColor = "#00FF00"; //AZUL
             }
             return HexadecimalColor;
         }

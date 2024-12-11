@@ -347,7 +347,7 @@ namespace SAP_Core.DAL
             ListQuotation agencias = new ListQuotation();
 
            
-            string strSQL = string.Format("SELECT * FROM \"_SYS_BIC\".\"App.SalesForce.Bo.Prod/LIST_QUOTATION\"('PLACEHOLDER' = ('$$Fecha$$','{0}'),'PLACEHOLDER' = ('$$Imei$$','{1}'))",fecha,imei);
+            string strSQL = string.Format("CALL {0}.APP_LIST_COTIZACION('{1}','{2}')",DataSource.bd(),imei, fecha);
 
             try
             {

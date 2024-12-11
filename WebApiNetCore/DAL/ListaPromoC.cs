@@ -104,7 +104,7 @@ namespace SAP_Core.DAL
                 listarPromoC.PromotionListHeader = listaPromoCs;
                 connection.Close();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 if (connection.State == ConnectionState.Open)
                 {

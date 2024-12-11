@@ -58,6 +58,8 @@ namespace SAP_Core.BO
         public string DeliveryRefusedMoney { get; set; }
         public string U_VIS_ManagementType { get; set; }
         public string Superviser { get; set; }
+        public string isInspectionValidated { get; set; }
+        
         public string ChangeWarehouse { get; set; }
         public string UpdateCustomer { get; set; }
         public string CustomerRecovery { get; set; }

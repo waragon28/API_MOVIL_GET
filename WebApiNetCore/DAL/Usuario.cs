@@ -210,6 +210,8 @@ namespace SAP_Core.DAL
                         usuario.DeliveryRefusedMoney = reader["DeliveryRefusedMoney"] == null ? "Y" : Convert.ToString(reader["DeliveryRefusedMoney"]);
                         usuario.U_VIS_ManagementType = reader["U_VIS_ManagementType"].ToString().ToUpper();
                         usuario.Superviser = reader["Superviser"].ToString().ToUpper();
+                        usuario.isInspectionValidated = reader["isInspectionValidated"].ToString().ToUpper();
+
                         usuario.ChangeWarehouse = reader.GetSchemaTable().Columns.Contains("ChangeWarehouse") && !reader.IsDBNull(reader.GetOrdinal("ChangeWarehouse"))
     ? reader["ChangeWarehouse"].ToString().ToUpper()
     : reader["ChangeWarehouse"].ToString().ToUpper();

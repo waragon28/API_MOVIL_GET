@@ -214,7 +214,6 @@ namespace SAP_Core.DAL
                         ObjDocumentLine.TaxCode = reader["TaxCode"].ToString();
                         ObjDocumentLine.TaxOnly = reader["TaxOnly"].ToString();
                         ObjDocumentLine.WarehouseCode = reader["WhsCode"].ToString();
-                        ObjDocumentLine.U_SYP_FECAT07 = reader["U_SYP_FECAT07"].ToString();
                         ObjDocumentLine.U_VIST_CTAINGDCTO = reader["U_VIST_CTAINGDCTO"].ToString();
                         ObjDocumentLine.U_VIS_CommentText = reader["U_VIS_CommentText"].ToString();
                         ObjDocumentLine.U_VIS_PromID = reader["U_VIS_PromID"].ToString();
@@ -288,7 +287,6 @@ namespace SAP_Core.DAL
                         coti_To_OV.U_SYP_DOCEXPORT = reader["U_SYP_DOCEXPORT"].ToString();
                         coti_To_OV.U_SYP_FEEST = reader["U_SYP_FEEST"].ToString();
                         coti_To_OV.U_SYP_FEMEX = reader["U_SYP_FEMEX"].ToString();
-                        coti_To_OV.U_SYP_FETO = reader["U_SYP_FETO"].ToString();
                         coti_To_OV.U_VIS_Intent = reader["U_VIS_Intent"].ToString();
                         coti_To_OV.U_VIS_Brand = reader["U_VIS_Brand"].ToString();
                         coti_To_OV.U_VIS_Model = reader["U_VIS_Model"].ToString();

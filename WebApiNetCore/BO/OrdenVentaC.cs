@@ -65,7 +65,6 @@ namespace SAP_Core.BO
         public string U_SYP_DOCEXPORT { get; set; }
         public string U_SYP_FEEST { get; set; }
         public string U_SYP_FEMEX { get; set; }
-        public string U_SYP_FETO { get; set; }
         public string U_VIS_Intent { get; set; }
         public string U_VIS_Brand { get; set; }
         public string U_VIS_Model { get; set; }
@@ -98,7 +97,6 @@ namespace SAP_Core.BO
         public string TaxCode { get; set; }
         public string TaxOnly { get; set; }
         public string WarehouseCode { get; set; }
-        public string U_SYP_FECAT07 { get; set; }
         public string U_VIST_CTAINGDCTO { get; set; }
         public string U_VIS_CommentText { get; set; }
         public string U_VIS_PromID { get; set; }

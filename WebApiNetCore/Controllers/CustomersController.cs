@@ -120,9 +120,9 @@ namespace WebApiNetCore.Controllers
 
                 LoginRequest objLogin = new()
                 {
-                    CompanyDB = "B1H_VIST_PE_QA",
-                    Password = "1234",
-                    UserName = "APP"
+                    CompanyDB = "B1H_VIST_PE",
+                    Password = "SLV147",
+                    UserName = "B1H_VIST_PE"
                 };
 
 

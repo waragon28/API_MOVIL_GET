@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\waragon\\Desktop\\API_Mobil_Get\\WebApiNetCore\\WebApiNetCore.csproj": {}
+    "F:\\APP MOBIL\\API_Mobil_Get\\WebApiNetCore\\WebApiNetCore.csproj": {}
   },
   "projects": {
-    "C:\\Users\\waragon\\Desktop\\API_Mobil_Get\\WebApiNetCore\\WebApiNetCore.csproj": {
+    "F:\\APP MOBIL\\API_Mobil_Get\\WebApiNetCore\\WebApiNetCore.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\waragon\\Desktop\\API_Mobil_Get\\WebApiNetCore\\WebApiNetCore.csproj",
+        "projectUniqueName": "F:\\APP MOBIL\\API_Mobil_Get\\WebApiNetCore\\WebApiNetCore.csproj",
         "projectName": "WebApiNetCore",
-        "projectPath": "C:\\Users\\waragon\\Desktop\\API_Mobil_Get\\WebApiNetCore\\WebApiNetCore.csproj",
+        "projectPath": "F:\\APP MOBIL\\API_Mobil_Get\\WebApiNetCore\\WebApiNetCore.csproj",
         "packagesPath": "C:\\Users\\waragon\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\waragon\\Desktop\\API_Mobil_Get\\WebApiNetCore\\obj\\",
+        "outputPath": "F:\\APP MOBIL\\API_Mobil_Get\\WebApiNetCore\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\waragon\\AppData\\Roaming\\NuGet\\NuGet.Config",

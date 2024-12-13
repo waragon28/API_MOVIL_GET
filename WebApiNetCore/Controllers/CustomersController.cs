@@ -122,7 +122,7 @@ namespace WebApiNetCore.Controllers
                 {
                     CompanyDB = "B1H_VIST_PE",
                     Password = "SLV147",
-                    UserName = "B1H_VIST_PE"
+                    UserName = "SLVistony"
                 };
 
 
